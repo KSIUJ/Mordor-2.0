@@ -1,0 +1,9 @@
+.pgdata
+.vscode
+.idea
+
+
+data/
+*.db
+*.sqlite
+*.sqlite3
