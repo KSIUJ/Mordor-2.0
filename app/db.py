@@ -24,7 +24,7 @@ class DatabaseConnection:
     async def delete(self):
         os.remove(self.db_path)
     
-    async def get_connection(self):
+    def get_connection(self):
         """Get a database connection context manager"""
         if not self.db_path:
             raise RuntimeError("Database not initialized. Call connect() first.")
