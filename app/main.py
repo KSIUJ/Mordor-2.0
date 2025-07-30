@@ -3,9 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from router.health import router as health_router
+from router.authtesting import router as auth_router
 from db import db
 import logging
 import asyncio
+from services.authservice import auth_middleware
+
 
 app = FastAPI()
 
@@ -21,9 +24,13 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+#Add Middleware
+app.middleware("http")(auth_middleware)
+
 # Include routers
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(health_router)
+app.include_router(auth_router)
 
 @app.on_event("startup")
 async def startup_event():
