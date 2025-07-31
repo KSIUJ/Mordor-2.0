@@ -1,6 +1,7 @@
 
 # Authors
 opwip
+Jakub Karczyński
 AdamH
 # Mordor-2.0(Change .md files later, most of the content is for IntroTask)
 This is a template for FastAPI applications from IntroductionTask, tweaked for it to work with sqlite db.
