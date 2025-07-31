@@ -1,0 +1,56 @@
+Table users {
+  id serial [primary key]
+  username varchar [unique,not null]
+  password varchar [not null]
+  role varchar [not null]
+  Note: 'basic users info'
+}
+Table users_info{
+  id integer [ref: - users.id]
+  email varchar [unique]
+  Note: "additional info about users. Possibly needs improvement"
+}
+
+Table users_limits{
+  user_role varchar [primary key,ref: - users.role]
+  size_limit numeric [default: 10000000,note:'limit in bytes, 10MB by default']
+  number_limit integer [default: 20, note: 'limit of amount of files']
+  Note:'helping table for upload limits'
+}
+Table recently_opened{
+  user_id integer [ref: -users.id]
+  file_id integer [ref: <files.id]
+  opened_at timestamp
+  indexes {
+    (user_id, file_id) [unique]
+  }
+  Note: "files recently opened by users, unique pairs: (file_id,user_id)"
+}
+
+Table files {
+  id serial [primary key]
+  name varchar [not null,note: 'shown filename']
+  filepath varchar [not null, note:'path to file']
+  status varchar  [default: 'pending', note: 'file status, accepted/rejected/pending']
+  size integer [not null, note:"file size"]
+  uploaded_at timestamp [note: 'current timestamp by default (cant set timestamp in DMBL)']
+  uploaded_by integer [ref:> users.id]
+  indexes {
+    (status)
+  }
+}
+
+Table tags {
+  id serial [primary key]
+  name varchar [not null,unique]
+  Note: "basic info about tags"
+}
+
+Table tag_file{
+  file_id integer [ref: >files.id]
+  tag_id integer [ref: >tags.id]
+  indexes {
+    (file_id, tag_id) [unique]
+  }
+  Note: 'connect tags and files'
+}
