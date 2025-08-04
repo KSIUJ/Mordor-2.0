@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Dict, List
 from pydantic import BaseModel
 from fastapi import Request, HTTPException, status
+from fastapi.responses import JSONResponse
 
 # Define user roles
 class Role(str, Enum):
@@ -14,9 +15,9 @@ class Role(str, Enum):
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/auth/user", "/health"],
-    Role.MANAGER: ["/auth/manager"],
-    Role.ADMIN: ["/auth/admin"],
+    Role.USER: ["/test/auth/user", "/health"],
+    Role.MANAGER: ["/test/auth/manager"],
+    Role.ADMIN: ["/test/auth/admin"],
 }
 
 # User model to mock authentication
@@ -75,9 +76,10 @@ async def auth_middleware(request: Request, call_next):
     request.state.user = user
     
     if not auth_service.is_path_allowed(path, user.role):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Insufficient role permissions"
+        return  JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content="Insufficient role permissions"
+            
         )
     
     response = await call_next(request)
