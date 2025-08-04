@@ -27,8 +27,9 @@ class User(BaseModel):
 
 class AuthService:
     """Mock authentication service for development using cookie role simulation."""
-    
+
     COOKIE_ROLE_KEY = "X-Role"
+    role_hierarchy = [Role.PUBLIC, Role.USER, Role.MANAGER, Role.ADMIN]
     
     def _normalize_path(self, path: str) -> str:
         """Remove trailing slash except for root path."""
@@ -54,12 +55,12 @@ class AuthService:
     def is_path_allowed(self, path: str, user_role: Role) -> bool:
         """Check if user role can access the path."""
         normalized_path = self._normalize_path(path)
-        role_hierarchy = [Role.PUBLIC, Role.USER, Role.MANAGER, Role.ADMIN]
-        user_level = role_hierarchy.index(user_role)
+        
+        user_level = self.role_hierarchy.index(user_role)
         
         # Check if the path starts with any route from higher roles
-        for i in range(user_level + 1, len(role_hierarchy)):
-            higher_role = role_hierarchy[i]
+        for i in range(user_level + 1, len(self.role_hierarchy)):
+            higher_role = self.role_hierarchy[i]
             for route in ROLE_ROUTES.get(higher_role, []):
                 normalized_route = self._normalize_path(route)
                 if normalized_path.startswith(normalized_route):
@@ -76,11 +77,16 @@ async def auth_middleware(request: Request, call_next):
     request.state.user = user
     
     if not auth_service.is_path_allowed(path, user.role):
+        if user.role == Role.PUBLIC:
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content="User not authorized"
+            )
         return  JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_403_FORBIDDEN,
             content="Insufficient role permissions"
-            
         )
-    
     response = await call_next(request)
     return response
+
+
