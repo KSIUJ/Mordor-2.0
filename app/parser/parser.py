@@ -69,11 +69,11 @@ def parseExpression(expression: str) -> OrNode | AndNode | NotNode | TagNode:
     """
     tokens = tokenize(expression)
     if not tokens:
-        raise ValueError("Empty expression")
+        raise SyntaxError("Empty expression")
     
     parser = Parser(tokens)
     ast = parser.parseOrExpr()
     if parser.pos != len(parser.tokens):
-        raise ValueError(f"Unexpected tokens at the end of the expression: {parser.tokens[parser.pos:]!r}")
+        raise SyntaxError(f"Unexpected tokens at the end of the expression: {parser.tokens[parser.pos:]!r}")
     
     return ast

@@ -3,6 +3,10 @@ from app.parser.tokenizer import tokenize
 from app.parser.parser import parseExpression
 from app.parser.astNodes import OrNode, AndNode, NotNode, TagNode
 
+"""
+    run from main directory with "PYTHONPATH=. pytest Test/test_parser.py"
+    or all tests with "PYTHONPATH=. pytest"
+"""
 
 def ast_to_list(ast):
     """helper function converting ast to list for easier testing"""
@@ -17,7 +21,6 @@ def ast_to_list(ast):
     else:
         raise ValueError(f"Unexpected node type: {type(ast)}")
 
-#temp python3 -m pytest Test/test_parser.py
 
 #       tokenizer test
 
@@ -28,10 +31,11 @@ def ast_to_list(ast):
     ("!(dog || cat) && cute", ["!", "(", "dog", "||", "cat", ")", "&&", "cute"]),
     
     # Special char
-    ("tag-with-hyphens", ["tag-with-hyphens"]),
-    ("tag_with_underscores", ["tag_with_underscores"]),
-    ("tag.with.dots", ["tag.with.dots"]),
-    ("tag123", ["tag123"]),
+    ("tag-with-hyphens || a", ["tag-with-hyphens", "||", "a"]),
+    ("tag_with_underscores  || a", ["tag_with_underscores", "||", "a"]),
+    ("tag.with.dots || a", ["tag.with.dots", "||", "a"]),
+    ("tag123 || a", ["tag123", "||", "a"]),
+    ("tag_-.,@#$+=%~^:*/?   || ' tag  _-.,@#$+=%~^:*/? || && () ! ' && $+=%", ["tag_-.,@#$+=%~^:*/?", "||", " tag  _-.,@#$+=%~^:*/? || && () ! ", "&&", "$+=%"]),
     
     # Operators
     ("a && b || c", ["a", "&&", "b", "||", "c"]),
@@ -88,13 +92,13 @@ def test_parseExpression_valid(parse_inp, parse_exp):
     assert ast_to_list(parseExpression(parse_inp)) == parse_exp
 
 
-@pytest.mark.parametrize("parseExpr_valErr", ["", "a && b c d e"])
-def test_parseExpression_ValueErr(parseExpr_valErr):
-    with pytest.raises(ValueError):
-        parseExpression(parseExpr_valErr)
-
-
-@pytest.mark.parametrize("parseExpr_synErr", ["(a ^ b)", "a && (b   c)"])
+@pytest.mark.parametrize("parseExpr_synErr", ["", "a && b c d e"])
 def test_parseExpression_SyntaxErr(parseExpr_synErr):
     with pytest.raises(SyntaxError):
         parseExpression(parseExpr_synErr)
+
+
+@pytest.mark.parametrize("parseExpr_synErr2", ["(a ^ b)", "a && (b   c)"])
+def test_parseExpression_SyntaxErr2(parseExpr_synErr2):
+    with pytest.raises(SyntaxError):
+        parseExpression(parseExpr_synErr2)

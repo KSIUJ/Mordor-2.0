@@ -7,3 +7,6 @@ data/
 *.db
 *.sqlite
 *.sqlite3
+
+
+Test/__pycache__

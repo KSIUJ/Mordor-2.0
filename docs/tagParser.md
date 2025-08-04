@@ -14,7 +14,7 @@
     andExpression ::= notExpression { '&&' notExpression}
     notExpression ::= '!' notExpression | base
     base ::= tag | '(' expression ')'
-    tag ::= [a-zA-Z0-9_-.] { [a-zA-Z0-9_-.] }
+    tag ::= [a-zA-Z0-9_-.,@#$+=%~^:*/? ] { [a-zA-Z0-9_-.,@#$+=%~^:*/? ] }
 ```
 
 ## 3. AST Node types
@@ -48,10 +48,11 @@ And(
 
 Tags must follow these rules:
 
-# TBD
+- Tags **not** enclosed in quotation marks cannot contain `()!|&`
+- Tags **not** enclosed in quotation marks may contain `a-zA-Z0-9_-.,@#$+=%~^:*/? `
+- Tags enclosed in quotation marks may contain any characters, including `()!|&` and `a-zA-Z0-9_-.,@#$+=%~^:*/? `
 
 
 ## 6. Notes
 
-- **Functional completeness:** The combination of logical operators (`!`, `&&`, `||`) and parentheses makes it functionally complete.
 - **Tests:** Contains basic tests for tokenization and parsing.
