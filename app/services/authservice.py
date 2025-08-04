@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import Dict, List
 from pydantic import BaseModel
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 
 # Define user roles
 class Role(str, Enum):
@@ -11,19 +11,10 @@ class Role(str, Enum):
     MANAGER = "MANAGER"
     ADMIN = "ADMIN"
 
-# Route configuration: Role -> List of routes
-# Needs to include full routes but every route under the route included will also require the highest level the route included in
-ROLE_ROUTES: Dict[Role, List[str]] = {
-    Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health"],
-    Role.MANAGER: ["/test/auth/manager"],
-    Role.ADMIN: ["/test/auth/admin"],
-}
-
 # User model to mock authentication
 class User(BaseModel):
     username: str
-    role: Role
+    role: str
 
 class AuthService:
     """Mock authentication service for development using cookie role simulation."""
@@ -52,10 +43,9 @@ class AuthService:
         username = f"mock_{role.lower()}_user"
         return User(username=username, role=role)
 
-    def is_path_allowed(self, path: str, user_role: Role) -> bool:
+    def is_path_allowed(self, path: str, user_role: Role, ROLE_ROUTES : dict) -> bool:
         """Check if user role can access the path."""
         normalized_path = self._normalize_path(path)
-        
         user_level = self.role_hierarchy.index(user_role)
         
         # Check if the path starts with any route from higher roles
@@ -70,23 +60,26 @@ class AuthService:
 
 auth_service = AuthService()
 
-async def auth_middleware(request: Request, call_next):
+class AuthMiddleware(BaseHTTPMiddleware):
     """Middleware that blocks access to higher role routes."""
-    path = request.url.path
-    user = await auth_service.get_user_from_cookie(request)
-    request.state.user = user
-    
-    if not auth_service.is_path_allowed(path, user.role):
-        if user.role == Role.PUBLIC:
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content="User not authorized"
+    def __init__(self,app, config):
+        super().__init__(app)
+        self.ROLE_ROUTES = config["ROLE_ROUTES"]
+        
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+        user = await auth_service.get_user_from_cookie(request)
+        request.state.user = user
+        
+        if not auth_service.is_path_allowed(path, user.role, self.ROLE_ROUTES):
+            if user.role == Role.PUBLIC:
+                return JSONResponse(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content="User not authorized"
+                )
+            return  JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content="Insufficient role permissions"
             )
-        return  JSONResponse(
-            status_code=status.HTTP_403_FORBIDDEN,
-            content="Insufficient role permissions"
-        )
-    response = await call_next(request)
-    return response
-
-
+        response = await call_next(request)
+        return response

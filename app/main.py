@@ -7,7 +7,7 @@ from router.testEndpoints import router as test_router
 from db import db
 import logging
 import asyncio
-from services.authservice import auth_middleware
+from services.authservice import AuthMiddleware, Role
 
 
 app = FastAPI()
@@ -24,8 +24,20 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-#Add Middleware
-app.middleware("http")(auth_middleware)
+
+from typing import Dict, List
+# Route configuration: Role -> List of routes
+# Needs to include full routes but every route under the route included will also require the highest level the route included in
+ROLE_ROUTES: Dict[Role, List[str]] = {
+    Role.PUBLIC: ["/"],
+    Role.USER: ["/test/auth/user", "/health"],
+    Role.MANAGER: ["/test/auth/manager"],
+    Role.ADMIN: ["/test/auth/admin"],
+}
+#Add Role Middleware
+app.add_middleware(AuthMiddleware, config = {
+    "ROLE_ROUTES" : ROLE_ROUTES,                                     
+                                             })
 
 # Include routers
 app.mount("/static", StaticFiles(directory="static"), name="static")
