@@ -1,14 +1,9 @@
 Table users {
   id serial [primary key]
   username varchar [unique,not null]
-  password varchar [not null]
   role varchar [not null]
-  Note: 'basic users info'
-}
-Table users_info{
-  id integer [ref: - users.id]
   email varchar [unique]
-  Note: "additional info about users. Possibly needs improvement"
+  Note: 'basic users info'
 }
 
 Table users_limits{
