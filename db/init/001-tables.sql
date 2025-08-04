@@ -1,17 +1,16 @@
+-- Table defining upload limits for different user roles
+CREATE TABLE users_limits (
+  user_role varchar PRIMARY KEY,  -- References user roles
+  size_limit numeric DEFAULT 10000000,    -- Size limit in bytes (default 10MB)
+  number_limit integer DEFAULT 20         -- Maximum number of files allowed
+);
+
 -- Basic users information table
 CREATE TABLE users (
   id serial PRIMARY KEY,
   username varchar(50) UNIQUE NOT NULL,  -- Unique username for each user
-  role varchar NOT NULL,             -- User role for permissions
+  role varchar NOT NULL references users_limits(user_role),   -- User role for permissions
   email varchar(100) UNIQUE               -- Unique email for each user
-);
-
-
--- Table defining upload limits for different user roles
-CREATE TABLE users_limits (
-  user_role varchar PRIMARY KEY REFERENCES users(role),  -- References user roles
-  size_limit numeric DEFAULT 10000000,    -- Size limit in bytes (default 10MB)
-  number_limit integer DEFAULT 20         -- Maximum number of files allowed
 );
 
 -- Files storage information
