@@ -42,8 +42,8 @@ CREATE TABLE tags (
 CREATE TABLE tag_file (
   file_id integer REFERENCES files(id),   -- Reference to file
   tag_id integer REFERENCES tags(id),     -- Reference to tag
-  UNIQUE (file_id, tag_id)               -- Each file-tag combination is unique
+  UNIQUE (file_id, tag_id)                -- Each file-tag combination is unique
 );
 
 -- Index on file status for faster filtering
-CREATE INDEX ON files (status);
+CREATE INDEX idx_files_status ON files (status);
