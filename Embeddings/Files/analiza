@@ -1,0 +1,131 @@
+wierdzenie (wzór Taylora z resztą Peano)
+Niech f : (a − δ, a + δ) → R będzie funkcją n-krotnie
+różniczkowalną. Wtedy zachodzi równość:
+f (x) = f (a)+f ′(a)(x−a)+ f ′′(a)
+2 (x−a)2+· · ·+ f (n)(a)
+n! (x−a)n+r (x),
+gdzie funkcja r jest n-krotne różniczkowalna i r (x) = o((x − a)n) w
+a.
+Wielomian
+pn(x) = f (a) + f ′(a)(x − a) + f ′′(a)
+2 (x − a)2 + · · · + f (n)(a)
+n! (x − a)n
+nazywamy wielomianem Taylora stopnia n funkcji f , funkcję r
+resztą Peano
+Wzór Taylora Wypukłość
+Twierdzenie Taylora jest wykorzystywane do wyznaczania
+przybliżonych wartości funkcji.
+Przykłady
+1 ex = 1 + x + x2
+2 + · · · + xn
+n! + o(xn),
+2 sin x = x − x3
+6 + x5
+5! + · · · + (−1)n x2n+1
+(2n+1)! + o(x2n+2),
+3 cos x = 1 − x2
+2 + x4
+4! + · · · + (−1)n x2n
+(2n)! + o(x2n+1),
+4 1
+x+1 = 1 − x + x2 − x3 + · · · + (−1)nxn + o(xn),
+5 ln(1 + x) = x − x2
+2 + x3
+3 + · · · + (−1)n xn
+n + o(xn).
+Wzór Taylora Wypukłość
+Istnieją różne wersje formuły Taylora, w których postać reszty jest
+dokładniej opisana, co pozwala na lepsze szacowania.
+Twierdzenie (wzór Taylora z resztą Lagrange’a)
+Niech f : I → R będzie funkcją (n + 1)-krotnie różniczkowalną na
+otwartym odcinku I . Niech [a, b] ⊂ I wtedy zachodzi wzór:
+f (b) = f (a) + f ′(a)(b − a) + f ′′(a)
+2! (b − a)2 + · · · +
++ f (n)(a)
+n! (b − a)n + f (n+1)(c)
+(n + 1)! (b − a)n+1,
+gdzie c ∈ (a, b) jest pewną liczbą.
+W założeniach twierdzenia o postaci reszty Lagrange’a wystarczy
+założyc, że pochodna (n + 1) rzędu istnieje na odcinku (a, b).
+Wzór Taylora Wypukłość
+Metoda Newtona-Raphsona znajdowania zer funkcji różniczkowalnej
+1 Wybieramy pierwsze przybliżenie x0.
+2 Rekurencyjnie kładziemy xn+1 = xn − f (xn)
+f ′(xn) , jeśli tylko
+f ′(xn) 6 = 0
+Twierdzenia Taylora możemy wykorzystać do podania użytecznego
+kryterium na sprawdzanie czy w danym punkcie istnieje ekstremum
+lokalne.
+Twierdzenie
+Niech f : I → R będzie fukcją n-krotnie różniczkowalną, a ∈ I .
+Załóżmy, że
+f ′(a) = f ′′(a) = · · · = f (k−1)(a) = 0 oraz f (k)(a) 6 = 0,
+dla pewnego k < n wtedy jeśli:
+1 k jest liczbą parzystą i f (k)(a) > 0, to w punkcie a jest
+minimum lokalne;
+2 k jest liczbą parzystą i f (k)(a) < 0, to w punkcie a jest
+maksimum lokalne;
+3 k jest liczbą nieparzystą, to w punkcie a nie ma ekstremum
+lokalnego
+Dla funkcji f (x) = sin x + x w punkcie π mamy f ′(π) = f ′′(π) = 0
+i f (3)(π) = 1 stąd f nie ma ekstremum w π.
+Dla funkcji g (x) = x4ex w punkcie 0 mamy
+g ′(0) = · · · = g (3)(0) = 0 i g (4)(0) = 24 stąd g ma minimum
+lokalne w 0.
+wierdzenie
+Niech f : I → R będzie funkcją różniczkowalną w otoczeniu punktu
+a, wtedy
+1 jeśli f ′(x) < 0 dla x ∈ (a − δ, a) oraz f ′(x) > 0 dla
+x ∈ (a, a + δ) przy pewnym δ > 0, to w punkcie a jest
+minimum lokalne;
+2 jeśli f ′(x) > 0 dla x ∈ (a − δ, a) oraz f ′(x) < 0 dla
+x ∈ (a, a + δ) przy pewnym δ > 0, to w punkcie a jest
+maksimum lokalne;
+3 jeśli f ′(x)f ′(y ) > 0 dla x ∈ (a − δ, a) oraz y ∈ (a, a + δ) przy
+pewnym δ > 0, to w punkcie a nie ma ekstremum lokalnego.
+Zbiór A nazywamy wypukłym, jeśli dla dowolnych punktów
+x, y ∈ A odcinek łączący te punkty jest zawarty w zbiorze A.
+Wzór Taylora Wypukłość
+Definicja
+Zbiór A nazywamy wypukłym, jeśli dla dowolnych punktów
+x, y ∈ A odcinek łączący te punkty jest zawarty w zbiorze A.
+Definicja
+Zbiór A nazywamy wypukłym, jeśli dla dowolnych punktów
+x, y ∈ A odcinek łączący te punkty jest zawarty w zbiorze A.
+Niech f : I → R będzie funkcją, przez Nf będziemy oznaczali jej
+nadwykres, czyli zbiór:
+Nf = {(x, y ) : y ≥ f (x)}.
+Definicja
+Funkcję f : I → R nazywamy wypukłą ku dołowi (krótko
+wypukłą), je’sli zbiór Nf jest wypukły.
+Funkcję f : I → R nazywamy wklęsłą, jeśli funkcja −f jest
+wypukła.Funkcja f : I → R jest wypukła wtedy i tylko wtedy, gdy dla
+dowolnych x, y ∈ I oraz dowolnego t ∈ [0, 1] zachodzi
+f (tx + (1 − t)y ) ≤ tf (x) + (1 − t)f (y ).
+Obserwacja
+Funkcja f : I → R jest wypukła wtedy i tylko wtedy, gdy dla
+dowolnych x, y ∈ I oraz dowolnego t ∈ [0, 1] zachodzi
+f (tx + (1 − t)y ) ≤ tf (x) + (1 − t)f (y ).
+Twierdzenie
+Niech f : I → R będzie funkcją dwukrotnie różniczkowalną na
+odcinku I . Wtedy:
+1 f ′′(x) ≥ 0 dla każdego x ∈ I ⇐⇒ f wypukła;
+2 f ′′(x) ≤ 0 dla każdego x ∈ I ⇐⇒ f wklęsła.
+Badanie funkcji.
+1 Wyznaczamy dziedzinę zadanej funkcji.
+2 Wyznaczamy punkty przecięcia z osiami (jeśli takie istnieją)
+rozwiązując równania:
+f (x) = 0,
+f (0) = y .
+3 Sprawdzamy parzystość zadanej funkcji (jeśli jest parzysta jej
+wykres jest symetryczny względem osi y , jeśli nieparzysta -
+wykres symetryczny względem początku układu
+współrzędnych).
+4 Sprawdzamy okresowość funkcji.
+5 Wyznaczamy wszystkie asympoty funkcji (pionowe, poziome,
+ukośne).
+6 Wyznaczamy f ′ oraz f ′′.
+7 Wyznaczamy przedziały monotoniczności (badając znak f ′).
+8 Wyznaczamy ekstrema lokalne (należy pamiętać o punktach,
+w których pochodna nie istnieje).
+9 Wyznaczamy przedziały wypukłości (badając znak f ′′).
