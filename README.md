@@ -1,12 +1,9 @@
+
 # Authors
 opwip
-<<<<<<< HEAD
-Jakub Karczyński
-=======
 
 Jakub Karczyński
 
->>>>>>> 63f789474e5e28c62412d2e914a2fc3b491b92ec
 # Mordor-2.0(Change .md files later, most of the content is for IntroTask)
 This is a template for FastAPI applications from IntroductionTask, tweaked for it to work with sqlite db.
 
