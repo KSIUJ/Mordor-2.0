@@ -1,8 +1,7 @@
 .pgdata
 .vscode
 .idea
-
-
+venv/
 data/
 *.db
 *.sqlite
