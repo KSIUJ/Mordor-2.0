@@ -10,7 +10,7 @@ class DatabaseConnection:
     
     async def connect(self):
         """Initialize database connection"""
-        database_url = os.getenv("DATABASE_URL", "sqlite:///db/database.db")
+        database_url = os.getenv("DATABASE_URL", "sqlite://./db/database.db")
         
         self.db_path = database_url.replace("sqlite://", "")
         
