@@ -69,10 +69,11 @@ def test_tokenize(tokenizer_inp, tokenizer_exp):
     ("!(dog || cat) && cute", ["and", ["not", ["or", ["tag", "dog"], ["tag", "cat"]]], ["tag", "cute"]]),
     
     # Special char
-    ("tag-with-hyphens", ["tag", "tag-with-hyphens"]),
-    ("tag_with_underscores", ["tag", "tag_with_underscores"]),
-    ("tag.with.dots", ["tag", "tag.with.dots"]),
-    ("tag123", ["tag", "tag123"]),
+    ("tag-with-hyphens || a", ["or", ["tag", "tag-with-hyphens"], ["tag", "a"]]),
+    ("tag_with_underscores  || a", ["or", ["tag", "tag_with_underscores"], ["tag", "a"]]),
+    ("tag.with.dots || a", ["or", ["tag", "tag.with.dots"], ["tag", "a"]]),
+    ("tag123 || a", ["or", ["tag", "tag123"], ["tag", "a"]]),
+    ("tag_-.,@#$+=%~^:*/?   || ' tag  _-.,@#$+=%~^:*/? || && () ! ' && $+=%", ["or", ["tag", "tag_-.,@#$+=%~^:*/?"], ["and", ["tag", " tag  _-.,@#$+=%~^:*/? || && () ! "], ["tag", "$+=%"]]]),
     
     # Operators
     ("a && b || c", ["or", ["and", ["tag", "a"], ["tag", "b"]], ["tag", "c"]]),
