@@ -2,6 +2,7 @@ import aiosqlite
 import os
 from pathlib import Path
 from typing import Optional
+import logging
 
 class DatabaseConnection:
     def __init__(self):
@@ -10,7 +11,7 @@ class DatabaseConnection:
     
     async def connect(self):
         """Initialize database connection"""
-        database_url = os.getenv("DATABASE_URL", "sqlite://./db/database.db")
+        database_url = os.getenv("DATABASE_URL", "sqlite://./data/db/database.db")
         
         self.db_path = database_url.replace("sqlite://", "")
         
@@ -48,13 +49,16 @@ class DatabaseConnection:
             return False
 
     async def _run_init_scripts(self, db: aiosqlite.Connection):
-        """Execute all scripts frob db/init"""
-        init_dir=Path(__file__).parent.parent / "db" / "init"
-
+        """Execute all scripts from db/init"""
+        init_dir = Path(os.getenv("DB_INIT_DIR", "/data/init"))
+        if not init_dir.exists():
+            logging.error(f"Init directory does not exist: {init_dir}")
+            return
         try:
             scripts = sorted(f for f in os.listdir(init_dir) if f.endswith(".sql"))
+            logging.info(f"Found scripts: {scripts}")
         except OSError as e:
-            print(f"Error reading init directory: {e}")
+            logging.error(f"Error reading init directory: {e}")
             return
 
         for script in scripts:
@@ -64,9 +68,9 @@ class DatabaseConnection:
                     sql = f.read()
                     if sql.strip():  # Only execute non-empty scripts
                         await db.executescript(sql)
-                        print(f"Executed script: {script}")
+                        logging.info(f"Executed script: {script}")
             except Exception as e:
-                print(f"Error executing script {script}: {e}")
+                logging.error(f"Error executing script {script}: {e}")
                 raise
         await db.commit()
 
