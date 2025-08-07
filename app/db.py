@@ -11,7 +11,7 @@ class DatabaseConnection:
     
     async def connect(self):
         """Initialize database connection"""
-        database_url = os.getenv("DATABASE_URL", "sqlite://./data/db/database.db")
+        database_url = os.getenv("DATABASE_URL", "sqlite://./db/data/database.db")
         
         self.db_path = database_url.replace("sqlite://", "")
         
@@ -50,7 +50,7 @@ class DatabaseConnection:
 
     async def _run_init_scripts(self, db: aiosqlite.Connection):
         """Execute all scripts from db/init"""
-        init_dir = Path(os.getenv("DB_INIT_DIR", "/data/init"))
+        init_dir = Path("/db/init")
         if not init_dir.exists():
             logging.error(f"Init directory does not exist: {init_dir}")
             return
