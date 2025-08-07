@@ -1,8 +1,15 @@
 .pgdata
 .vscode
 .idea
-venv/
+.venv
+
 data/
 *.db
 *.sqlite
 *.sqlite3
+
+
+**/__pycache__
+**/*.py[cod]
+**/*.pyo
+**/*.pyd
