@@ -4,6 +4,7 @@
 .venv
 
 data/
+db/data
 *.db
 *.sqlite
 *.sqlite3
