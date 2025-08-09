@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import PyPDF2
+import chromadb
 from sentence_transformers import SentenceTransformer, util
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 class SEARCHER:
@@ -16,6 +17,10 @@ class SEARCHER:
         return torch.max(biggest),IND,biggest_ind[IND]
 
     def __init__(self, files_paths:list):
+        #initializing data base
+#        chroma_client = chromadb.Client()
+#        collection = chroma_client.create_collection(name="books")
+        #number of propare files
         self.numOfFiles = 0
         self.model = SentenceTransformer('flax-sentence-embeddings/all_datasets_v4_MiniLM-L6')
         #splits file into sentences
@@ -46,23 +51,33 @@ class SEARCHER:
         if(self.numOfFiles==0):
             print("No proper files added")
             return
-        #list containing list of embeddings of each sentence e.g. embeddings[i][j] - embeddings of jth sentence in ith file
+        #array containing tensor of embeddings of each sentence e.g. embeddings[i][j] - embeddings of jth sentence in ith file
         SIZE = len(self.text)
         self.embeddings = np.empty(SIZE,dtype=torch.Tensor)
         for i in range(0,SIZE):
             self.embeddings[i] = torch.from_numpy(self.model.encode(self.text[i]))
-
+            self.embeddings[i] = self.embeddings[i].cuda()
+        '''
+        for i in range(0,self.numOfFiles):
+            collection.add(
+                documents = self.text[i],
+                ids = i,
+                embeddings = self.embeddings[i]
+            )
+        '''
     def get_result(self,search:str):
         if(self.numOfFiles==0):
             print("No proper files added")
             return
         #embedding search from user
-        word = self.model.encode(search)
+        word = torch.from_numpy(self.model.encode(search))
+        word = word.cuda()
         #calculating embedding similarities between user search and files text
         SIZE = self.numOfFiles
         cos_sim = np.empty(SIZE,dtype=torch.Tensor)
         for i in range(0,SIZE):
             cos_sim[i] = util.cos_sim(self.embeddings[i],word).squeeze()
+            cos_sim[i] = cos_sim[i].cuda()
         #biggest cosine, index of the most matching file and index of best matching sentence in this file
         COS, F_IND,S_IND  = self.find_file_index(cos_sim)
 
