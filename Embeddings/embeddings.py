@@ -47,7 +47,10 @@ class SEARCHER:
             print("No proper files added")
             return
         #list containing list of embeddings of each sentence e.g. embeddings[i][j] - embeddings of jth sentence in ith file
-        self.embeddings = [self.model.encode(d) for d in self.text]
+        SIZE = len(self.text)
+        self.embeddings = np.empty(SIZE,dtype=torch.Tensor)
+        for i in range(0,SIZE):
+            self.embeddings[i] = torch.from_numpy(self.model.encode(self.text[i]))
 
     def get_result(self,search:str):
         if(self.numOfFiles==0):
@@ -56,7 +59,10 @@ class SEARCHER:
         #embedding search from user
         word = self.model.encode(search)
         #calculating embedding similarities between user search and files text
-        cos_sim = [util.cos_sim(self.embeddings[i], word).squeeze() for i in range(0,self.numOfFiles)]
+        SIZE = self.numOfFiles
+        cos_sim = np.empty(SIZE,dtype=torch.Tensor)
+        for i in range(0,SIZE):
+            cos_sim[i] = util.cos_sim(self.embeddings[i],word).squeeze()
         #biggest cosine, index of the most matching file and index of best matching sentence in this file
         COS, F_IND,S_IND  = self.find_file_index(cos_sim)
 
