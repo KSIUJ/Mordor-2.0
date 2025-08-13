@@ -1,2 +1,9 @@
 <nav>
+  <a href="/">Home</a> | {% if is_authenticated %}
+  <a href="/profile">
+    {{ current_user.username if current_user else 'Profile' }}
+  </a>
+  |
+  <a href="/test/auth/set-role/PUBLIC">Logout</a> | {% else %}
+  <a href="/test/auth/set-role/USER">Login</a> | {% endif %}
 </nav>

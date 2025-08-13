@@ -1,9 +1,16 @@
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from services.authservice import Role
+from fastapi.templating import Jinja2Templates
 
+templates = Jinja2Templates(directory="templates")
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+@router.get("/")
+async def auth_home(request: Request):
+    return templates.TemplateResponse("authtesting/authtest.html", {
+        "request": request
+        })
 
 @router.get("/public")
 async def public_route(request: Request):
@@ -50,11 +57,15 @@ async def set_role_cookie(role: str, response: JSONResponse):
         JSONResponse: Confirmation message with the cookie set.
     """
     role = role.upper()
-    if role not in [Role.USER, Role.ADMIN, Role.MANAGER]:
+    if role == Role.PUBLIC:
+        response = JSONResponse(content={"message": f"Logged out"})
+        response.delete_cookie(key="X-Role")
+    elif role not in [Role.USER, Role.ADMIN, Role.MANAGER]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid role. Use USER, ADMIN, or MANAGER"
         )
-    response = JSONResponse(content={"message": f"Role set to {role}"})
-    response.set_cookie(key="X-Role", value=role)
+    else:
+        response = JSONResponse(content={"message": f"Role set to {role}"})
+        response.set_cookie(key="X-Role", value=role)
     return response

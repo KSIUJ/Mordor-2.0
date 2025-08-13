@@ -8,6 +8,7 @@ from db import db
 import logging
 import asyncio
 from services.authservice import AuthMiddleware, Role
+from services.templates import TemplateMiddleware
 
 
 app = FastAPI()
@@ -35,6 +36,7 @@ ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.ADMIN: ["/test/auth/admin"],
 }
 #Add Role Middleware
+app.add_middleware(TemplateMiddleware)
 app.add_middleware(AuthMiddleware, config = {
     "ROLE_ROUTES" : ROLE_ROUTES,                                     
                                              })
