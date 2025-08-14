@@ -1,68 +1,76 @@
 import numpy as np
 import torch
 import PyPDF2
+import chromadb
 from sentence_transformers import SentenceTransformer, util
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 class SEARCHER:
     # finds file index with the most matching sentence
-    def find_file_index(self,angles):
-        SIZE = len(angles)
-        biggest = torch.empty(SIZE,dtype = torch.float32)
-        biggest_ind = torch.empty(SIZE,dtype = torch.int32)
-        for i in range(0,SIZE):
-            biggest[i] = torch.max(angles[i])
-            biggest_ind[i] = torch.argmax(angles[i])
-        IND = torch.argmax(biggest)
-        return torch.max(biggest),IND,biggest_ind[IND]
-
-    def __init__(self, files_paths:list):
-        self.numOfFiles = 0
-        self.model = SentenceTransformer('flax-sentence-embeddings/all_datasets_v4_MiniLM-L6')
-        #splits file into sentences
+    def codePair(self,a:int, b:int)->int:
+        return (a + b) * (a + b + 1) // 2 + b
+    def uncodePair(self,z:int)->int:
+        w = int(((8*z + 1)**0.5 - 1) // 2)
+        t = w * (w+1) // 2
+        b = z - t
+        a = w - b
+        return a, b
+    def addChunk(self,text:str,id:str)->None:
+        self.collection.add(
+            documents = text,
+            ids = str(id),
+            embeddings = np.array(self.model.encode(text))
+        )
+    def EmbedFile(self, path:str, chunkSize:int, sep:list)->None:
+        pdf_text=""
         splitter = RecursiveCharacterTextSplitter(
-            chunk_size=150,
+            chunk_size=chunkSize,
             chunk_overlap=50,
             length_function=len,
-            separators = ['.','?','!']
+            separators = sep
         )
-        #contains lists of sentences
-        self.text = []
-        #contains PDF files paths
-        self.files = []
-        for path in files_paths:
-            with open(path,'rb') as pdf:
-                #extracting text from PDF file into pdf_text
-                reader = PyPDF2.PdfReader(pdf, strict=False)
-                pages_text = []
-                for page in reader.pages:
-                    pages_text.append(page.extract_text())
-
+        # extracting all file text into pdf_text
+        with open(path,'rb') as pdf:
+            reader = PyPDF2.PdfReader(pdf, strict=False)
+            pages_text = []
+            for page in reader.pages:
+                pages_text.append(page.extract_text())
                 pdf_text = "".join(pages_text)
                 if(pdf_text==""):
-                    continue
-                self.files.append(pdf)
-                self.numOfFiles+=1
-                self.text.append([sentence.page_content for sentence in splitter.create_documents([pdf_text])])
-        if(self.numOfFiles==0):
-            print("No proper files added")
-            return
-        #list containing list of embeddings of each sentence e.g. embeddings[i][j] - embeddings of jth sentence in ith file
-        self.embeddings = [self.model.encode(d) for d in self.text]
+                    raise TypeError(f"file ({path})  has no extractable data")
+                    return
+        
+        self.numOfFiles+=1
+        text = [file.page_content for file in splitter.create_documents([pdf_text])]
+        # if last chunk is smaller than half of chunkSize then merge last two chunks
+        #if(len(text)>=2 and len(text[-1])<chunkSize/2):
+        #    text[-2]+=text.pop()
+        for i in range(0,len(text)):
+            self.addChunk(text[i],self.codePair(self.numOfFiles,i))
+
+
+
+    def __init__(self):
+        #initializing data base
+        chroma_client = chromadb.Client()
+        self.collection = chroma_client.get_or_create_collection(name="books")
+        self.model = SentenceTransformer('flax-sentence-embeddings/all_datasets_v4_MiniLM-L6')
+        #number of propare files
+        self.numOfFiles = 0
 
     def get_result(self,search:str):
         if(self.numOfFiles==0):
             print("No proper files added")
             return
         #embedding search from user
-        word = self.model.encode(search)
-        #calculating embedding similarities between user search and files text
-        cos_sim = [util.cos_sim(self.embeddings[i], word).squeeze() for i in range(0,self.numOfFiles)]
-        #biggest cosine, index of the most matching file and index of best matching sentence in this file
-        COS, F_IND,S_IND  = self.find_file_index(cos_sim)
-
-        print("file: " + str(self.files[F_IND].name))
-        print("sentence: " + str(self.text[F_IND][S_IND]))
-        print("similarity index: " + str(float(COS)))
-        #returns index of most matching file
-        return F_IND
+        word = np.array(self.model.encode(search))
+        SIZE = self.numOfFiles
+        #getting most matching files
+        query = self.collection.query(
+                    query_embeddings = word,
+                    n_results = 10
+                )
+        for code in query['ids'][0]:
+            print("file nr. " + str(self.uncodePair(int(code))[0]))
+            
+        return query;
 
