@@ -8,12 +8,13 @@ from db import db
 import logging
 import asyncio
 from services.authservice import AuthMiddleware, Role
-
+from templates import patch_templates
 
 app = FastAPI()
 
 # Configure Jinja2 templates
 templates = Jinja2Templates(directory="templates")
+patch_templates()
 
 # Enable CORS
 app.add_middleware(
