@@ -42,6 +42,20 @@ async def random_route(request: Request):
     user = request.state.user
     return {"message": f"Random route accessed by {user.username} with role {user.role}"}
 
+@router.get("/login")
+async def login():
+    role = "USER"
+    response = JSONResponse(content={"message": f"Role set to {role}"})
+    response.set_cookie(key="X-Role", value=role)
+    return response
+
+@router.get("/logout")
+async def logout():
+    print(">>>")
+    response = JSONResponse(content={"message": f"Logged out"})
+    response.delete_cookie(key="X-Role")
+    return response
+
 
 # Helper endpoint to set mock role cookie (for testing)
 @router.get("/set-role/{role}")

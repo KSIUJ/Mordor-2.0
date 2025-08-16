@@ -8,13 +8,13 @@ from db import db
 import logging
 import asyncio
 from services.authservice import AuthMiddleware, Role
-from services.templates import TemplateMiddleware
-
+from templates import patch_templates
 
 app = FastAPI()
 
 # Configure Jinja2 templates
 templates = Jinja2Templates(directory="templates")
+patch_templates()
 
 # Enable CORS
 app.add_middleware(
@@ -36,7 +36,6 @@ ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.ADMIN: ["/test/auth/admin"],
 }
 #Add Role Middleware
-app.add_middleware(TemplateMiddleware)
 app.add_middleware(AuthMiddleware, config = {
     "ROLE_ROUTES" : ROLE_ROUTES,                                     
                                              })

@@ -4,6 +4,6 @@
     {{ current_user.username if current_user else 'Profile' }}
   </a>
   |
-  <a href="/test/auth/set-role/PUBLIC">Logout</a> | {% else %}
-  <a href="/test/auth/set-role/USER">Login</a> | {% endif %}
+  <a href="/test/auth/logout">Logout</a> | {% else %}
+  <a href="/test/auth/login">Login</a> | {% endif %}
 </nav>
