@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from fastapi import UploadFile
-from model.fileModel import AddFileRequest, FileStatus
+from model.fileModel import AddFileRequest, FileStatus, ChangeStatusRequest
 from repository.fileRepository import FileRepository
 
 #TODO: update path to make it correct
@@ -38,3 +38,6 @@ class FileService:
         return await self.repo.insert_file_with_tags(addFileRequest)
     async def get_accepted_files(self):
         return await self.repo.get_accepted_files()
+
+    async def change_status(self,request: ChangeStatusRequest):
+        return await self.repo.change_status(request)

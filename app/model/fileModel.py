@@ -16,12 +16,14 @@ class FileInfo(BaseModel):
     uploaded_by: int
     status: FileStatus
 
-class AcceptedFilesResponse(BaseModel):
+class CommonResponse(BaseModel):
+    """Response model to return file to user"""
     return_code: int
+
+class AcceptedFilesResponse(CommonResponse):
     files: List[FileInfo]
 
-class AfterUploadResponse(BaseModel):
-    return_code: int
+class AfterUploadResponse(CommonResponse):
     file_id: int
     tags: List[int]
 
