@@ -9,6 +9,7 @@ class FileRepository:
     def __init__(self):
         self.db=db
     async def insert_file_with_tags(self,request: AddFileRequest):
+        """Inserts requested file"""
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 status_value = request.status.value if isinstance(request.status, Enum) else request.status
@@ -47,21 +48,44 @@ class FileRepository:
                                          WHERE status = 'accepted'
                                          """)
                     rows = await cursor.fetchall()
-                    files = []
-                    for row in rows:
-                        files.append(FileInfo(
-                            id=row[0],
-                            name=row[1],
-                            size=row[2],
-                            uploaded_by=row[3],
-                            status=FileStatus(row[4])
-                        ))
+                    files=self.process_files(rows)
                     conn.close()
                     return AcceptedFilesResponse(return_code=200, files=files)
                 except Exception as e:
                     return CommonResponse(return_code=500)
 
+    async def get_all_files(self):
+        """Returns basic info about accepted files to common user"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute("""
+                                         SELECT id, name, size, uploaded_by, status
+                                         FROM files
+                                         """)
+                    rows = await cursor.fetchall()
+                    files=self.process_files(rows)
+                    conn.close()
+                    return AcceptedFilesResponse(return_code=200, files=files)
+                except Exception as e:
+                    return CommonResponse(return_code=500)
+
+    def process_files(self,rows):
+        """Helper method to avoid redundant code"""
+        files = []
+        for row in rows:
+            files.append(FileInfo(
+                id=row[0],
+                name=row[1],
+                size=row[2],
+                uploaded_by=row[3],
+                status=FileStatus(row[4])
+            ))
+        return files
+
+
     async def change_status(self,request: ChangeStatusRequest):
+        """Changes status of file"""
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 try:

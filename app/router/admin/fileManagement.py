@@ -6,6 +6,11 @@ from services.authservice import auth_service
 from services.fileService import FileService
 router = APIRouter(prefix="/admin", tags=["admin","file"])
 service = FileService()
+
+@router.get("/get_all_files")
+async def get_all_files():
+    return await service.get_all_files()
+
 @router.put("/upload")
 async def upload(
     file: UploadFile = File(...),
@@ -23,3 +28,4 @@ async def change_status(
         request: ChangeStatusRequest
 ):
     return await service.change_status(request)
+

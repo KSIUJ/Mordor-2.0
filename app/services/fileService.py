@@ -36,8 +36,12 @@ class FileService:
             tags=tags
         )
         return await self.repo.insert_file_with_tags(addFileRequest)
+
     async def get_accepted_files(self):
         return await self.repo.get_accepted_files()
 
     async def change_status(self,request: ChangeStatusRequest):
         return await self.repo.change_status(request)
+
+    async def get_all_files(self):
+        return await self.repo.get_all_files()
