@@ -11,7 +11,7 @@ class FileRepository:
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 status_value = request.status.value if isinstance(request.status, Enum) else request.status
-                await conn.execute("""
+                await cursor.execute("""
                     INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by)
                     VALUES (?, ?, ?, ?, ?, ?)
                 """, (
@@ -25,10 +25,11 @@ class FileRepository:
 
                 file_id = cursor.lastrowid
 
-                for tag_id in request.tags:
-                    cursor.execute("""
-                        INSERT INTO tag_file (file_id, tag_id) VALUES (?, ?)
-                    """, (file_id, tag_id))
+                if request.tags:
+                    await cursor.executemany(
+                        "INSERT INTO tag_file (file_id, tag_id) VALUES (?, ?)",
+                        [(file_id, tag_id) for tag_id in request.tags]
+                    )
 
                 await conn.commit()
                 conn.close()

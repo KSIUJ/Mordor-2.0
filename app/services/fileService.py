@@ -35,4 +35,4 @@ class FileService:
             uploaded_at=datetime.now(),
             tags=tags
         )
-        await self.repo.insert_file_with_tags(addFileRequest)
+        return await self.repo.insert_file_with_tags(addFileRequest)
