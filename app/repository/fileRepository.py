@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List
 
 from db import db
-from model.fileModel import AddFileRequest
+from model.fileModel import AddFileRequest, FileInfo, AfterUploadResponse, AcceptedFilesResponse, FileStatus
 import json
 class FileRepository:
     def __init__(self):
@@ -33,5 +33,29 @@ class FileRepository:
 
                 await conn.commit()
                 conn.close()
+                return AfterUploadResponse(return_code=200,file_id=file_id,tags=request.tags)
 
-                return {"file_id": file_id, "tags": request.tags}
+    async def get_accepted_files(self):
+        """Returns basic info about accepted files to common user"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("""
+                                     SELECT id, name, size, uploaded_by, status
+                                     FROM files
+                                     WHERE status = 'accepted'
+                                     """)
+                rows = await cursor.fetchall()
+                files = []
+                for row in rows:
+                    try:
+                        files.append(FileInfo(
+                            id=row[0],
+                            name=row[1],
+                            size=row[2],
+                            uploaded_by=row[3],
+                            status=FileStatus(row[4])  # <-- Tu jest problem
+                        ))
+                    except ValueError as e:
+                        print(f"BŁĄD KONWERSJI: Wiersz {row} | Status: {row[4]} | Błąd: {str(e)}")
+                        raise
+                return AcceptedFilesResponse(return_code=200, files=files)
