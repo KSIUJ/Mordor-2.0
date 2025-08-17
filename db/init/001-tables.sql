@@ -7,7 +7,7 @@ CREATE TABLE users_limits (
 
 -- Basic users information table
 CREATE TABLE users (
-  id serial PRIMARY KEY,
+  id integer PRIMARY KEY AUTOINCREMENT,
   username varchar(50) UNIQUE NOT NULL,  -- Unique username for each user
   role varchar NOT NULL references users_limits(user_role),   -- User role for permissions
   email varchar(100) UNIQUE               -- Unique email for each user
@@ -15,12 +15,12 @@ CREATE TABLE users (
 
 -- Files storage information
 CREATE TABLE files (
-  id serial PRIMARY KEY,
+  id integer PRIMARY KEY AUTOINCREMENT,
   name varchar(100) NOT NULL,          -- Display name of the file
   filepath varchar NOT NULL CHECK (name <> ''),     -- Physical path to the file
   status varchar DEFAULT 'pending',    -- File status: pending/accepted/rejected
   size integer NOT NULL,               -- File size in bytes
-  uploaded_at timestamp,               -- Timestamp of upload
+  uploaded_at timestamp DEFAULT CURRENT_TIMESTAMP,               -- Timestamp of upload
   uploaded_by integer REFERENCES users(id)  -- User who uploaded the file
 );
 
@@ -34,7 +34,7 @@ CREATE TABLE recently_opened (
 
 -- Tags information
 CREATE TABLE tags (
-  id serial PRIMARY KEY,
+  id integer PRIMARY KEY AUTOINCREMENT,
   name varchar(50) UNIQUE NOT NULL  -- Unique tag name
 );
 
