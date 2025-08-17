@@ -57,7 +57,18 @@ class SEARCHER:
 
     def __init__(self):
         #initializing data base
-        chroma_client = chromadb.Client()
+        from chromadb.config import DEFAULT_TENANT, DEFAULT_DATABASE, Settings
+
+        chroma_client = chromadb.HttpClient(
+            host="localhost",
+            port=8000,
+            ssl=False,
+            headers=None,
+            settings=Settings(),
+            tenant=DEFAULT_TENANT,
+            database=DEFAULT_DATABASE,
+        )
+        #chroma_client = chromadb.Client()
         self.collection = chroma_client.get_or_create_collection(name="books")
         #initializing embedding model
         self.model = SentenceTransformer('flax-sentence-embeddings/all_datasets_v4_MiniLM-L6')
@@ -76,8 +87,6 @@ class SEARCHER:
                     query_embeddings = word,
                     n_results = 10
                 )
-        for code in query['ids'][0]:
-            print("file nr. " + str(self.uncodePair(int(code))[0]))
             
         return query;
 
