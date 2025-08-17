@@ -5,21 +5,27 @@ import chromadb
 from sentence_transformers import SentenceTransformer, util
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 class SEARCHER:
-    # finds file index with the most matching sentence
+    # code file id and embedding id as one hash
     def codePair(self,a:int, b:int)->int:
         return (a + b) * (a + b + 1) // 2 + b
+    # decode hash into file id and embedding id 
     def uncodePair(self,z:int)->int:
         w = int(((8*z + 1)**0.5 - 1) // 2)
         t = w * (w+1) // 2
         b = z - t
         a = w - b
         return a, b
+    # adds chunk of text with it's id into database
     def addChunk(self,text:str,id:str)->None:
         self.collection.add(
             documents = text,
             ids = str(id),
             embeddings = np.array(self.model.encode(text))
         )
+    # embeds file chunks based on given arguments
+    # path - path to a PDF file
+    # chunkSize - maximum number of characters in single chunk
+    # sep - list of chunk separators as characters
     def EmbedFile(self, path:str, chunkSize:int, sep:list)->None:
         pdf_text=""
         splitter = RecursiveCharacterTextSplitter(
@@ -28,23 +34,23 @@ class SEARCHER:
             length_function=len,
             separators = sep
         )
-        # extracting all file text into pdf_text
+        # extracting all file text into pdf_text variable
         with open(path,'rb') as pdf:
             reader = PyPDF2.PdfReader(pdf, strict=False)
             pages_text = []
             for page in reader.pages:
                 pages_text.append(page.extract_text())
                 pdf_text = "".join(pages_text)
+                # if no text extracted throw an error
                 if(pdf_text==""):
                     raise TypeError(f"file ({path})  has no extractable data")
                     return
         
         self.numOfFiles+=1
+        #list of strings represanting each chunk in given file 
         text = [file.page_content for file in splitter.create_documents([pdf_text])]
-        # if last chunk is smaller than half of chunkSize then merge last two chunks
-        #if(len(text)>=2 and len(text[-1])<chunkSize/2):
-        #    text[-2]+=text.pop()
         for i in range(0,len(text)):
+            # adding chunk into database
             self.addChunk(text[i],self.codePair(self.numOfFiles,i))
 
 
@@ -53,6 +59,7 @@ class SEARCHER:
         #initializing data base
         chroma_client = chromadb.Client()
         self.collection = chroma_client.get_or_create_collection(name="books")
+        #initializing embedding model
         self.model = SentenceTransformer('flax-sentence-embeddings/all_datasets_v4_MiniLM-L6')
         #number of propare files
         self.numOfFiles = 0
