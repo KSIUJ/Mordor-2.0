@@ -60,7 +60,7 @@ class SEARCHER:
         from chromadb.config import DEFAULT_TENANT, DEFAULT_DATABASE, Settings
 
         chroma_client = chromadb.HttpClient(
-            host="localhost",
+            host="chromadb",
             port=8000,
             ssl=False,
             headers=None,
