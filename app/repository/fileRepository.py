@@ -6,7 +6,6 @@ from fastapi import HTTPException
 from db import db
 from model.fileModel import AddFileRequest, FileInfo, AfterUploadResponse, AcceptedFilesResponse, FileStatus, \
     ChangeStatusRequest, CommonResponse, UpdateFileRequest
-import json
 class FileRepository:
     def __init__(self):
         self.db=db
@@ -136,41 +135,57 @@ class FileRepository:
                         filepath=row[5]
                     )
                 except Exception as e:
-                    raise HTTPException(300)
+                    raise HTTPException(500)
 
     async def update_file(self, request: UpdateFileRequest,tags):
         """Update file metadata by id"""
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("""
-                                     UPDATE files
-                                     SET name     = ?,
-                                         filepath = ?,
-                                         size     = ?
-                                     WHERE id = ?
-                                     """, (
-                                         request.filename,
-                                         request.filepath,
-                                         request.size,
-                                         request.id
-                                     ))
-                await conn.commit()
-                if cursor.rowcount == 0:
-                    raise HTTPException(404, "File not found")
-                # Delete old tags
+                try:
 
-                await cursor.execute("""
-                                     DELETE
-                                     FROM tag_file
-                                     WHERE file_id = ?
-                                     """, (request.id,))
-                await conn.commit()
-                #  Add new tags
+                    await cursor.execute("""
+                                         UPDATE files
+                                         SET name     = ?,
+                                             filepath = ?,
+                                             size     = ?
+                                         WHERE id = ?
+                                         """, (
+                                             request.filename,
+                                             request.filepath,
+                                             request.size,
+                                             request.id
+                                         ))
+                    await conn.commit()
+                    if cursor.rowcount == 0:
+                        raise HTTPException(404, "File not found")
 
-                if tags:
-                    await cursor.executemany(
-                        "INSERT INTO tag_file (file_id, tag_id) VALUES (?, ?)",
-                        [(request.id, tag_id) for tag_id in tags]
-                    )
-                await conn.commit()
-                return CommonResponse(return_code=200, message="File updated")
+                    await self.update_tags(request.id,tags)
+
+                    conn.close()
+                    return CommonResponse(return_code=200, message="File updated")
+                except Exception as e:
+                    raise HTTPException(500)
+
+    async def update_tags(self,fileId: int, tags: List[int]):
+        """Update tags of file"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute("""
+                                         DELETE
+                                         FROM tag_file
+                                         WHERE file_id = ?
+                                         """, (fileId,))
+                    await conn.commit()
+                    #  Add new tags
+
+                    if tags:
+                        await cursor.executemany(
+                            "INSERT INTO tag_file (file_id, tag_id) VALUES (?, ?)",
+                            [(fileId, tag_id) for tag_id in tags]
+                        )
+                    await conn.commit()
+                    conn.close()
+                    return CommonResponse(return_code=200, message="Tags updated")
+                except Exception as e:
+                    raise HTTPException(500)

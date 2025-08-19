@@ -1,6 +1,7 @@
 import json
+from typing import List
 
-from fastapi import APIRouter, UploadFile, File, Form, Request
+from fastapi import APIRouter, UploadFile, File, Form, Request, Body
 
 from model.fileModel import ChangeStatusRequest, UpdateFileRequest
 from services.fileService import FileService
@@ -29,10 +30,18 @@ async def change_status(request: Request, body: ChangeStatusRequest):
 @router.post("/update_file")
 async def update_file(
     request: Request,
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
     tags: str = Form(...),
-    id: int = Form(...),
+    file_id: int = Form(...),
     name: str = Form(...)
 ):
     tags = json.loads(tags)
-    return await service.update_file(request, file, tags,id, name)
+    return await service.update_file(request, file, tags, file_id, name)
+
+@router.post("/change tags")
+async def change_tags(
+    request: Request,
+    tags: List[int] = Body(...),
+    file_id: int = Body(...)
+):
+    pass

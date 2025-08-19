@@ -23,10 +23,7 @@ async def upload(
     return await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
 
 
-@router.get("/get_files")
-async def get_files(request: Request):
-    result = await service.get_accepted_files(request)
-    return result
+
 
 @router.post("/update_file")
 async def update_file(
@@ -38,3 +35,8 @@ async def update_file(
 ):
     tags = json.loads(tags)
     return await service.update_file(request, file, tags,id, name)
+
+@router.get("/get_files")
+async def get_files(request: Request):
+    result = await service.get_accepted_files(request)
+    return result
