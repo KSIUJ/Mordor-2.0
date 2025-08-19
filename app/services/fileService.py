@@ -11,12 +11,15 @@ from services.authservice import User, Role
 UPLOAD_DIR=Path("uploads")
 
 def admin_auth(request: Request):
+    """For functions that require admin access"""
+
     user = request.state.user
     if user.role not in [Role.ADMIN]:
         raise HTTPException(status_code=403, detail="Permission denied")
 
 
 def user_auth(request: Request):
+    """For functions that require user access"""
     user = request.state.user
     if user.role not in [Role.ADMIN,Role.USER,Role.MANAGER]:
         raise HTTPException(status_code=403, detail="Permission denied")
@@ -61,6 +64,11 @@ class FileService:
             uploaded_at=datetime.now(),
             tags=tags
         )
+        # admin adds already accepted files
+        user = request.state.user
+        if user.role==Role.ADMIN:
+            addFileRequest.status=FileStatus.ACCEPTED
+
         return await self.repo.insert_file_with_tags(addFileRequest)
     async def get_accepted_files(self,request: Request):
         user_auth(request)

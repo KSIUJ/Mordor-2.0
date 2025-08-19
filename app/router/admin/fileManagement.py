@@ -28,9 +28,9 @@ async def change_status(request: Request, body: ChangeStatusRequest):
 @router.post("/update_file")
 async def update_file(
     request: Request,
-    file: File = File(...),
+    file: UploadFile = File(...),
     body: str = Form(...)
 ):
     data = json.loads(body)
     update_request = UpdateFileRequest(**data)
-    return await service.update_file(request, file, update_request)
+    return await service.update_file(request, file, update_request,1)
