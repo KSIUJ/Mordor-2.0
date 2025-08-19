@@ -1,13 +1,15 @@
-from fastapi import FastAPI 
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from db import db
 import logging
 import asyncio
 from services.authservice import AuthMiddleware, Role
+from parser.parser import parseExpression
 
 
 app = FastAPI()
@@ -74,3 +76,13 @@ async def shutdown_event():
 @app.get("/")
 async def root():
     return {"message": "Hello, World4!"}
+
+@app.get("/placeholder_search")
+async def placeholder():
+    return FileResponse("static/placeholder_search.html")
+
+@app.get("/api/files")
+async def api_files(q: str = Query("")):
+    ast = parseExpression(q)
+    results = await db.get_files_by_tags(ast)
+    return results
