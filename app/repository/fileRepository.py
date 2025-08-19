@@ -4,6 +4,7 @@ from typing import List
 from fastapi import HTTPException
 
 from db import db
+from model.exceptions import DatabaseError
 from model.fileModel import AddFileRequest, FileInfo, AfterUploadResponse, AcceptedFilesResponse, FileStatus, \
     ChangeStatusRequest, CommonResponse, UpdateFileRequest
 class FileRepository:
@@ -29,7 +30,7 @@ class FileRepository:
                     row = await cursor.fetchone()
 
                     if not row:
-                        raise HTTPException(status_code=404, detail="File not found")
+                        return None
 
                     return FileInfo(
                         id=row[0],
@@ -40,7 +41,7 @@ class FileRepository:
                         filepath=row[5]
                     )
                 except Exception as e:
-                    raise HTTPException(500)
+                    raise DatabaseError()
 
     async def get_accepted_files(self):
         """Returns basic info about accepted files to common user"""
@@ -48,16 +49,16 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status
+                                         SELECT id, name, size, uploaded_by, status, filepath
                                          FROM files
                                          WHERE status = 'accepted'
                                          """)
                     rows = await cursor.fetchall()
                     files = self.process_files(rows)
                     conn.close()
-                    return AcceptedFilesResponse(return_code=200, files=files)
+                    return files
                 except Exception as e:
-                    return CommonResponse(return_code=500)
+                    raise DatabaseError()
 
     async def get_all_files(self):
         """Returns basic info about accepted files to common user"""
@@ -65,15 +66,15 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status
+                                         SELECT id, name, size, uploaded_by, status,filepath
                                          FROM files
                                          """)
                     rows = await cursor.fetchall()
                     files = self.process_files(rows)
                     conn.close()
-                    return AcceptedFilesResponse(return_code=200, files=files)
+                    return None
                 except Exception as e:
-                    return CommonResponse(return_code=500)
+                    raise DatabaseError()
 
     # =========================== UPDATES ==============================
 
@@ -98,14 +99,14 @@ class FileRepository:
                                          ))
                     await conn.commit()
                     if cursor.rowcount == 0:
-                        raise HTTPException(404, "File not found")
+                        raise FileNotFoundError()
 
                     await self.update_tags(request.id,tags)
 
                     conn.close()
-                    return CommonResponse(return_code=200, message="File updated")
+                    return True
                 except Exception as e:
-                    raise HTTPException(500)
+                    raise DatabaseError()
 
     async def change_status(self, request: ChangeStatusRequest):
         """Changes status of file"""
@@ -122,9 +123,9 @@ class FileRepository:
                                          ))
                     await conn.commit()
                     conn.close()
-                    return CommonResponse(return_code=200)
+                    return None
                 except Exception as e:
-                    return CommonResponse(return_code=500)
+                    raise DatabaseError()
 
     async def update_tags(self, fileId: int, tags: List[int]):
         """Update tags of file"""
@@ -146,9 +147,9 @@ class FileRepository:
                         )
                     await conn.commit()
                     conn.close()
-                    return HTTPException(return_code=200, message="Tags updated")
+                    return None
                 except Exception as e:
-                    raise HTTPException(500)
+                    raise DatabaseError()
 
     #   ========================== INSERTS ===========================
 
@@ -156,30 +157,34 @@ class FileRepository:
         """Inserts requested file"""
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
-                status_value = request.status.value if isinstance(request.status, Enum) else request.status
-                await cursor.execute("""
-                                        INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by)
-                                        VALUES (?, ?, ?, ?, ?, ?)
-                                    """, (
-                    request.filename,
-                    request.filepath,
-                    status_value,
-                    request.size,
-                    request.uploaded_at,
-                    request.uploaded_by
-                ))
+                try:
 
-                file_id = cursor.lastrowid
+                    status_value = request.status.value if isinstance(request.status, Enum) else request.status
+                    await cursor.execute("""
+                                            INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by)
+                                            VALUES (?, ?, ?, ?, ?, ?)
+                                        """, (
+                        request.filename,
+                        request.filepath,
+                        status_value,
+                        request.size,
+                        request.uploaded_at,
+                        request.uploaded_by
+                    ))
 
-                if request.tags:
-                    await cursor.executemany(
-                        "INSERT INTO tag_file (file_id, tag_id) VALUES (?, ?)",
-                        [(file_id, tag_id) for tag_id in request.tags]
-                    )
+                    file_id = cursor.lastrowid
 
-                await conn.commit()
-                conn.close()
-                return AfterUploadResponse(return_code=200,file_id=file_id,tags=request.tags)
+                    if request.tags:
+                        await cursor.executemany(
+                            "INSERT INTO tag_file (file_id, tag_id) VALUES (?, ?)",
+                            [(file_id, tag_id) for tag_id in request.tags]
+                        )
+
+                    await conn.commit()
+                    conn.close()
+                    return None
+                except Exception as e:
+                    raise DatabaseError()
 
     # ============================ DELETE ===================================\
     async def delete_file(self,fileId: int):
@@ -200,9 +205,9 @@ class FileRepository:
                                          """, (fileId,))
                     await conn.commit()
                     conn.close()
-                    return CommonResponse(return_code=200, message="File deleted")
+                    return None
                 except Exception as e:
-                    return CommonResponse(return_code=500)
+                    raise DatabaseError()
 
 
 
@@ -216,6 +221,7 @@ class FileRepository:
                 name=row[1],
                 size=row[2],
                 uploaded_by=row[3],
-                status=FileStatus(row[4])
+                status=FileStatus(row[4]),
+                filepath=row[5]
             ))
         return files

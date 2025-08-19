@@ -18,14 +18,14 @@ def admin_auth(request: Request):
     """For functions that require admin access"""
     user = request.state.user
     if user.role not in [Role.ADMIN]:
-        raise HTTPException(status_code=403, detail="Permission denied")
+        raise PermissionError
 
 
 def user_auth(request: Request):
     """For functions that require user access"""
     user = request.state.user
     if user.role not in [Role.ADMIN, Role.USER, Role.MANAGER]:
-        raise HTTPException(status_code=403, detail="Permission denied")
+        raise PermissionError
 
 
 # ==================== FILE OPERATIONS ====================
@@ -71,7 +71,7 @@ class FileService:
 
     async def delete_file(self, req: Request, fileId: int):
         admin_auth(req)
-        pass
+        return await self.repo.delete_file(fileId)
 
     # ==================== USER OPERATIONS ====================
     async def get_accepted_files(self, request: Request):
@@ -129,10 +129,8 @@ class FileService:
     def _validate_file_modification(self, file, user: User):
         """Validate if user can modify the file"""
         if file.status != FileStatus.PENDING and user.role == Role.USER:
-            raise HTTPException(
-                status_code=403,
-                detail=f"File {file.id} is not pending."
-            )
+            #   TODO maybe change type
+            raise ValueError
 
         # TODO: Add ownership check
         # if file.uploaded_by != user.id and user.role == Role.USER:
