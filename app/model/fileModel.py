@@ -5,7 +5,7 @@ from typing import List
 
 class FileStatus(str,Enum):
     PENDING = "pending"
-    APPROVED = "accepted"
+    ACCEPTED = "accepted"
     REJECTED = "rejected"
 
 class FileInfo(BaseModel):
