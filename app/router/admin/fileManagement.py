@@ -1,31 +1,36 @@
+import json
 
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File, Form, Request
 
-from model.fileModel import ChangeStatusRequest
-from services.authservice import auth_service
+from model.fileModel import ChangeStatusRequest, UpdateFileRequest
 from services.fileService import FileService
+
 router = APIRouter(prefix="/admin", tags=["admin","file"])
 service = FileService()
 
 @router.get("/get_all_files")
-async def get_all_files():
-    return await service.get_all_files()
+async def get_all_files(request: Request):
+    return await service.get_all_files(request)
 
 @router.put("/upload")
 async def upload(
+    request: Request,
     file: UploadFile = File(...),
-    tags: list[int]=Form(...)
+    tags: str = Form(...)
 ):
-    # user = await auth_service.get_user_from_cookie()
-    userId=1
-    #TODO: Enable getting id of logged user
-
-    result= await service.upload_file(file=file,tags=tags,userId=userId)
-    return result
+    tags = json.loads(tags)
+    return await service.upload_file(request=request, file=file, tags=tags)
 
 @router.post("/change_status")
-async def change_status(
-        request: ChangeStatusRequest
-):
-    return await service.change_status(request)
+async def change_status(request: Request, body: ChangeStatusRequest):
+    return await service.change_status(request, body)
 
+@router.post("/update_file")
+async def update_file(
+    request: Request,
+    file: File = File(...),
+    body: str = Form(...)
+):
+    data = json.loads(body)
+    update_request = UpdateFileRequest(**data)
+    return await service.update_file(request, file, update_request)
