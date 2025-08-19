@@ -1,13 +1,17 @@
 from enum import Enum
 from typing import List
 
+from fastapi import HTTPException
+
 from db import db
 from model.fileModel import AddFileRequest, FileInfo, AfterUploadResponse, AcceptedFilesResponse, FileStatus, \
-    ChangeStatusRequest, CommonResponse
+    ChangeStatusRequest, CommonResponse, UpdateFileRequest
 import json
 class FileRepository:
     def __init__(self):
         self.db=db
+
+
     async def insert_file_with_tags(self,request: AddFileRequest):
         """Inserts requested file"""
         async with self.db.get_connection() as conn:
@@ -102,3 +106,71 @@ class FileRepository:
                     return CommonResponse(return_code=200)
                 except Exception as e:
                     return CommonResponse(return_code=500)
+
+
+    async def get_file_by_id(self, fileId: int):
+        """Helping func to get status of file"""
+
+
+        async with self.db.get_connection() as conn:
+
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute("""
+                                         SELECT id, name, size, uploaded_by, status,filepath
+                                         FROM files
+                                         WHERE id = ?
+                                         """, (fileId,))
+
+                    row = await cursor.fetchone()
+
+                    if not row:
+                        raise HTTPException(status_code=404, detail="File not found")
+
+                    return FileInfo(
+                        id=row[0],
+                        name=row[1],
+                        size=row[2],
+                        uploaded_by=row[3],
+                        status=FileStatus(row[4]),
+                        filepath=row[5]
+                    )
+                except Exception as e:
+                    raise HTTPException(300)
+
+    async def update_file(self, request: UpdateFileRequest,tags):
+        """Update file metadata by id"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("""
+                                     UPDATE files
+                                     SET name     = ?,
+                                         filepath = ?,
+                                         size     = ?
+                                     WHERE id = ?
+                                     """, (
+                                         request.filename,
+                                         request.filepath,
+                                         request.size,
+                                         request.id
+                                     ))
+                await conn.commit()
+                if cursor.rowcount == 0:
+                    raise HTTPException(404, "File not found")
+                # Delete old tags
+
+                await cursor.execute("""
+                                     DELETE
+                                     FROM tag_file
+                                     WHERE file_id = ?
+                                     """, (request.id,))
+                await conn.commit()
+                #  Add new tags
+
+                if tags:
+                    await cursor.executemany(
+                        "INSERT INTO tag_file (file_id, tag_id) VALUES (?, ?)",
+                        [(request.id, tag_id) for tag_id in tags]
+                    )
+                await conn.commit()
+                return CommonResponse(return_code=200, message="File updated")

@@ -14,11 +14,13 @@ class FileInfo(BaseModel):
     name: str
     size: int
     uploaded_by: int
+    filepath: str
     status: FileStatus
 
 class CommonResponse(BaseModel):
     """Response model to return file to user"""
     return_code: int
+    message: str = None
 
 class AcceptedFilesResponse(CommonResponse):
     files: List[FileInfo]
