@@ -65,8 +65,9 @@ class FileService:
         admin_auth(req)
         return await self.repo.change_status(request)
 
-    async def change_tags(self, req: Request, tags: List[int]):
+    async def change_tags(self, req: Request,fileId:int, tags: List[int]):
         admin_auth(req)
+        return await self.repo.update_tags(fileId, tags)
 
     # ==================== USER OPERATIONS ====================
     async def get_accepted_files(self, request: Request):
