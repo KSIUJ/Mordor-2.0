@@ -69,6 +69,10 @@ class FileService:
         admin_auth(req)
         return await self.repo.update_tags(fileId, tags)
 
+    async def delete_file(self, req: Request, fileId: int):
+        admin_auth(req)
+        pass
+
     # ==================== USER OPERATIONS ====================
     async def get_accepted_files(self, request: Request):
         user_auth(request)

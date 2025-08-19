@@ -146,7 +146,7 @@ class FileRepository:
                         )
                     await conn.commit()
                     conn.close()
-                    return CommonResponse(return_code=200, message="Tags updated")
+                    return HTTPException(return_code=200, message="Tags updated")
                 except Exception as e:
                     raise HTTPException(500)
 
@@ -158,9 +158,9 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 status_value = request.status.value if isinstance(request.status, Enum) else request.status
                 await cursor.execute("""
-                    INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """, (
+                                        INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by)
+                                        VALUES (?, ?, ?, ?, ?, ?)
+                                    """, (
                     request.filename,
                     request.filepath,
                     status_value,
@@ -180,6 +180,30 @@ class FileRepository:
                 await conn.commit()
                 conn.close()
                 return AfterUploadResponse(return_code=200,file_id=file_id,tags=request.tags)
+
+    # ============================ DELETE ===================================\
+    async def delete_file(self,fileId: int):
+        """Deletes file having its id"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute("""
+                                        DELETE 
+                                        FROM tag_file
+                                        where file_id = ?
+                                        """, (fileId,))
+                    await conn.commit()
+                    await cursor.execute("""
+                                         DELETE
+                                         FROM files
+                                         where id = ?
+                                         """, (fileId,))
+                    await conn.commit()
+                    conn.close()
+                    return CommonResponse(return_code=200, message="File deleted")
+                except Exception as e:
+                    return CommonResponse(return_code=500)
+
 
 
     #   ========================== HELPER METHODS ==============================

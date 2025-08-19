@@ -44,4 +44,11 @@ async def change_tags(
     tags: List[int] = Body(...),
     file_id: int = Body(...)
 ):
+    return await service.change_tags(request, file_id, tags)
+
+@router.delete("/delete_file")
+async def delete_file(
+    request: Request,
+    file_id: int = Body(...)
+):
     pass
