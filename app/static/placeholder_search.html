@@ -2,23 +2,40 @@
 <html style="background-color: rgb(34, 34, 34);">
     <body>
         <form method="get" id="f">
-            <input name="q" placeholder="(tag1&&tag2)||tag3" autocomplete="off">
+            <input name="q" placeholder="calculus&&matrix" autocomplete="off">
             <button type="submit">Search</button>
         </form>
         <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const params = new URLSearchParams(window.location.search);
+                const input = document.querySelector('[name="q"]')
+                
+                if(params.get('q')){
+                    input.value = params.get('q')
+                    const url = new URL('/api/files', location.origin);
+                    url.search = params.toString();
+                    const response = await fetch(url, {method: 'GET'});
+                    const data = await response.json();
+                    console.log(data);
+                }
+            })
+
+
             document.getElementById('f').addEventListener('submit', async (e)=>{
                 e.preventDefault();
                 const form = e.target;
-                const url = new URL('/api/files', location.origin);
                 const params = new URLSearchParams(new FormData(form));
-                url.search = params.toString();
-                console.log(url);
-                console.log(url.search);
-                console.log(params);
-
-                const response = await fetch(url, {method: 'GET'});
-                const data = await response.json(); 
-                console.log(data);
+                if (params.get('q')){
+                    const url = new URL('/api/files', location.origin);
+                    url.search = params.toString();
+                    const response = await fetch(url, {method: 'GET'});
+                    const data = await response.json(); 
+                    console.log(data);
+                    window.history.replaceState({}, '', `?${params.toString()}`);
+                }
+                else{
+                    // to be determined
+                }
             })
         </script>
     </body>

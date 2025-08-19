@@ -2,6 +2,8 @@ from .astNodes import AndNode, OrNode, NotNode, TagNode
 from .parser import parseExpression
 
 class AST_to_SQL():
+    """Recursive AST parser"""
+
     def __init__(self):
         self.params = {}
         self.counter = 0
@@ -35,6 +37,7 @@ class AST_to_SQL():
         
         raise ValueError("Unknown AST node type")
 
+
     def run(self, ast: str) -> str:
         self.params = {}
         self.counter = 0
@@ -43,34 +46,12 @@ class AST_to_SQL():
         
         return sql
 
+
 def parseAST(ast: str) -> tuple[str, dict]:
+    """
+        Utility function that parses an AST into sql query
+    """
     parser = AST_to_SQL()
     sql = parser.run(ast)
     
     return sql, parser.params
-    
-    
-
-
-import sqlite3
-if __name__ == "__main__":
-    expression = "matrix && package || algorithm && boolean || (calculus && compile && !decimal)"
-    ast = parseExpression(expression)
-    print(expression)
-    print(ast)
-    conv = AST_to_SQL()
-    sql = conv.run(ast)
-    print(sql)
-    print(conv.params)
-    conn = sqlite3.connect("db/data/database.db")
-    cur = conn.cursor()
-    cur.execute(sql, conv.params)
-    results = cur.fetchall()
-    print(results)
-    
-    
-    #PYTHONPATH=. python -m app.parser.astToSQL
-    
-    
-    
-    
