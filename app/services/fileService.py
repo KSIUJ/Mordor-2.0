@@ -9,8 +9,8 @@ from model.fileModel import AddFileRequest, FileStatus, ChangeStatusRequest, Upd
 from repository.fileRepository import FileRepository
 from services.authservice import User, Role
 
-#TODO: update path to make it correct
-UPLOAD_DIR=Path("uploads")
+#TODO: set correct path in docker-compose
+UPLOAD_DIR=Path(os.getenv("UPLOAD_DIR", "uploads"))
 
 
 # ==================== AUTH FUNCTIONS ====================
