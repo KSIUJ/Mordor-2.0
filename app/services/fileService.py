@@ -29,14 +29,14 @@ def user_auth(request: Request):
 
 
 # ==================== FILE OPERATIONS ====================
-def _save_file_to_disk(file: UploadFile) -> tuple[str, int]:
+async def _save_file_to_disk(file: UploadFile) -> tuple[str, int]:
     """Save uploaded file to disk and return (filepath, size)"""
     ext = os.path.splitext(file.filename)[1]
     hashed_name = secrets.token_hex(16) + ext
     file_path = UPLOAD_DIR / hashed_name
 
     with open(file_path, "wb") as f:
-        content = file.read()
+        content = await file.read()
         f.write(content)
 
     return str(file_path), len(content)
@@ -81,7 +81,6 @@ class FileService:
     async def upload_file(self, request: Request, file: UploadFile,
                           tags: list[int], userId: int, name: str):
         user_auth(request)
-
         # Save file and get metadata
         filepath, size = await _save_file_to_disk(file)
 

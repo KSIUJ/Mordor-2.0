@@ -17,18 +17,6 @@ class FileInfo(BaseModel):
     filepath: str
     status: FileStatus
 
-class CommonResponse(BaseModel):
-    """Response model to return file to user"""
-    return_code: int
-    message: str = None
-
-class AcceptedFilesResponse(CommonResponse):
-    files: List[FileInfo]
-
-class AfterUploadResponse(CommonResponse):
-    file_id: int
-    tags: List[int]
-
 
 class AddFileRequest(BaseModel):
     """To add a file we need its model & selected tags"""
@@ -52,5 +40,10 @@ class UpdateFileRequest(BaseModel):
 
 class ChangeStatusRequest(BaseModel):
     """To update status we just need id"""
-    fileId: int
+    file_id: int
     status: FileStatus
+
+class ChangeTagsRequest(BaseModel):
+    """To update tags we need id and new list of tags"""
+    file_id: int
+    tags: List[int]

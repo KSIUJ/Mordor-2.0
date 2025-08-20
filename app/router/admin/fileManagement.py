@@ -2,8 +2,8 @@ import json
 from typing import List
 
 from fastapi import APIRouter, UploadFile, File, Form, Request, Body, HTTPException
-
-from model.fileModel import ChangeStatusRequest, UpdateFileRequest
+from functools import wraps
+from model.fileModel import ChangeStatusRequest, UpdateFileRequest, ChangeTagsRequest
 from services.fileService import FileService
 
 router = APIRouter(prefix="/admin", tags=["admin","file"])
@@ -12,6 +12,8 @@ service = FileService()
 #   =============== ERROR HANDLING WRAPPER ==================
 def handle_service_errors(func):
     """Decorator for handling errors"""
+
+    @wraps(func)
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
@@ -35,6 +37,10 @@ def handle_service_errors(func):
                 status_code=500,
                 detail="Internal server error"
             )
+    wrapper.__name__ = func.__name__
+    wrapper.__annotations__ = func.__annotations__
+    wrapper.__doc__ = func.__doc__
+
     return wrapper
 
 @router.get("/get_all_files")
@@ -50,8 +56,10 @@ async def upload(
     tags: str = Form(...),
     name: str = Form(...)
 ):
+    userId = 1
+    # TODO: Enable getting id of logged user
     tags = json.loads(tags)
-    return await service.upload_file(request=request, file=file, tags=tags,name=name)
+    return await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
 
 @router.post("/change_status")
 @handle_service_errors
@@ -70,19 +78,18 @@ async def update_file(
     tags = json.loads(tags)
     return await service.update_file(request, file, tags, file_id, name)
 
-@router.post("/change tags")
+@router.post("/change_tags")
 @handle_service_errors
 async def change_tags(
     request: Request,
-    tags: List[int] = Body(...),
-    file_id: int = Body(...)
+    changeReq: ChangeTagsRequest = Body(...)
 ):
-    return await service.change_tags(request, file_id, tags)
+    return await service.change_tags(request, changeReq.file_id,changeReq.tags)
 
-@router.delete("/delete_file")
+@router.delete("/delete_file/{file_id}")
 @handle_service_errors
 async def delete_file(
     request: Request,
-    file_id: int = Body(...)
+    file_id: int
 ):
     return await service.delete_file(request, file_id)

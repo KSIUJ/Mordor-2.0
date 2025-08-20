@@ -5,8 +5,7 @@ from fastapi import HTTPException
 
 from db import db
 from model.exceptions import DatabaseError
-from model.fileModel import AddFileRequest, FileInfo, AfterUploadResponse, AcceptedFilesResponse, FileStatus, \
-    ChangeStatusRequest, CommonResponse, UpdateFileRequest
+from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRequest, UpdateFileRequest
 class FileRepository:
 
     def __init__(self):
@@ -72,7 +71,7 @@ class FileRepository:
                     rows = await cursor.fetchall()
                     files = self.process_files(rows)
                     conn.close()
-                    return None
+                    return files
                 except Exception as e:
                     raise DatabaseError()
 
@@ -104,7 +103,7 @@ class FileRepository:
                     await self.update_tags(request.id,tags)
 
                     conn.close()
-                    return True
+                    return None
                 except Exception as e:
                     raise DatabaseError()
 
@@ -119,7 +118,7 @@ class FileRepository:
                                          where id = ?
                                          """, (
                                              request.status.value,
-                                             request.fileId
+                                             request.file_id
                                          ))
                     await conn.commit()
                     conn.close()
@@ -182,7 +181,7 @@ class FileRepository:
 
                     await conn.commit()
                     conn.close()
-                    return None
+                    return file_id
                 except Exception as e:
                     raise DatabaseError()
 
