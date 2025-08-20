@@ -1,7 +1,8 @@
-#   =============== ERROR HANDLING WRAPPER ==================
+from functools import wraps
+
 from fastapi import HTTPException
 
-
+#   =============== ERROR HANDLING WRAPPER ==================
 def handle_file_service_errors(func):
     """Decorator for handling errors"""
 
