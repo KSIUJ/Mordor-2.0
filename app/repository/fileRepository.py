@@ -6,6 +6,23 @@ from fastapi import HTTPException
 from db import db
 from model.exceptions import DatabaseError
 from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRequest, UpdateFileRequest
+
+
+def process_files(rows):
+    """Helper method to avoid redundant code"""
+    files = []
+    for row in rows:
+        files.append(FileInfo(
+            id=row[0],
+            name=row[1],
+            size=row[2],
+            uploaded_by=row[3],
+            status=FileStatus(row[4]),
+            filepath=row[5]
+        ))
+    return files
+
+
 class FileRepository:
 
     def __init__(self):
@@ -53,7 +70,7 @@ class FileRepository:
                                          WHERE status = 'accepted'
                                          """)
                     rows = await cursor.fetchall()
-                    files = self.process_files(rows)
+                    files = process_files(rows)
                     conn.close()
                     return files
                 except Exception as e:
@@ -69,7 +86,7 @@ class FileRepository:
                                          FROM files
                                          """)
                     rows = await cursor.fetchall()
-                    files = self.process_files(rows)
+                    files = process_files(rows)
                     conn.close()
                     return files
                 except Exception as e:
@@ -207,20 +224,3 @@ class FileRepository:
                     return None
                 except Exception as e:
                     raise DatabaseError()
-
-
-
-    #   ========================== HELPER METHODS ==============================
-    def process_files(self,rows):
-        """Helper method to avoid redundant code"""
-        files = []
-        for row in rows:
-            files.append(FileInfo(
-                id=row[0],
-                name=row[1],
-                size=row[2],
-                uploaded_by=row[3],
-                status=FileStatus(row[4]),
-                filepath=row[5]
-            ))
-        return files
