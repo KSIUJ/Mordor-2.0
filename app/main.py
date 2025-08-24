@@ -32,7 +32,7 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health"],
+    Role.USER: ["/test/auth/user", "/health", "/profile"],
     Role.MANAGER: ["/test/auth/manager"],
     Role.ADMIN: ["/test/auth/admin"],
 }
