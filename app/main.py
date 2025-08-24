@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
+from router.user import router as user_router
 from db import db
 import logging
 import asyncio
@@ -44,6 +45,7 @@ app.add_middleware(AuthMiddleware, config = {
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(health_router)
 app.include_router(test_router)
+app.include_router(user_router)
 
 @app.on_event("startup")
 async def startup_event():
