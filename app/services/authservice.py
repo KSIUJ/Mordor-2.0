@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from repositories.user_repository import User, user_repo
+import logging
 
 # Define user roles
 class Role(str, Enum):
@@ -12,9 +14,6 @@ class Role(str, Enum):
     ADMIN = "ADMIN"
 
 # User model to mock authentication
-class User(BaseModel):
-    username: str
-    role: str
 
 class AuthService:
     """Mock authentication service for development using cookie role simulation."""
@@ -40,8 +39,9 @@ class AuthService:
         except ValueError:
             return User(username="mock_public_user", role=Role.PUBLIC)
         
-        username = f"mock_{role.lower()}_user"
-        return User(username=username, role=role)
+        username = f"{role.lower()}_dummy"
+        user = await user_repo.get_user_by_username(username=username)
+        return user
 
     def is_path_allowed(self, path: str, user_role: Role, ROLE_ROUTES : dict) -> bool:
         """Check if user role can access the path."""

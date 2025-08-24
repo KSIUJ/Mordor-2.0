@@ -1,0 +1,72 @@
+{% extends "base.html" %} 
+{% block title %}Profile{% endblock %} 
+
+{% block content %}
+
+<style>
+  body {
+    background-color: #EAE4D5; 
+    color: #111111; 
+  }
+  .container {
+    background-color: #F2F2F2; 
+    transform-origin: top left;
+  }
+  .text-secondary {
+    color: #B6B09F 
+  }
+  .table th, .table td {
+    vertical-align: middle;
+  }
+  .table thead {
+    background-color: #EAE4D5; 
+  }
+</style>
+
+<div class="container border rounded p-4">
+  <div class="row">
+    <div class="col-md-4">
+      <h3>User profile</h3>
+      
+      <h5 class="mt-4 text-secondary">Personal info</h5>
+      <p><strong>Name:</strong> {{ name }}</p>
+      <p><strong>Email:</strong> {{ email }}</p>
+
+      <h5 class="mt-4 text-secondary">Quota</h5>
+      <p><strong>Size limit:</strong> {{ size_limit }}</p>
+      <p><strong>Number limit:</strong> {{ number_limit }}</p>
+    </div>
+
+    <div class="col-md-8">
+      <h3>Uploaded files</h3>
+      <table class="table table-bordered mt-3">
+        <thead>
+          <tr>
+            <th>File name</th>
+            <th>Uploaded at</th>
+            <th>File ID</th>
+            <th>Size</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files %}
+          <tr>
+            <td>{{ file.filename }}</td>
+            <td>{{ file.uploaded_at }}</td>
+            <td>{{ file.file_id }}</td>
+            <td>{{ file.size }}</td>
+            <td>{{ file.status }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center">No files uploaded</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

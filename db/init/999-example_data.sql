@@ -16,21 +16,24 @@ INSERT INTO tags VALUES
 (15, 'notation');
 
 INSERT INTO users_limits VALUES
-('admin', 89000000, 38),
-('user', 9000000, 10),
+('ADMIN', 89000000, 38),
+('USER', 9000000, 10),
 ('X-role', 45000000, 16);
 
 INSERT INTO users VALUES
-(1, 'jdixon', 'user', 'hwoodard@example.com'),
-(2, 'tgutierrez', 'user', 'xhubbard@example.net'),
-(3, 'shannondunlap', 'user', 'vjohnson@example.net'),
-(4, 'alicia90', 'admin', 'kristi27@example.com'),
-(5, 'chrisrhodes', 'user', 'heather33@example.org'),
-(6, 'yrivera', 'admin', 'nicolasramirez@example.net'),
-(7, 'hnewman', 'user', 'vernon22@example.net'),
+(1, 'jdixon', 'USER', 'hwoodard@example.com'),
+(2, 'tgutierrez', 'USER', 'xhubbard@example.net'),
+(3, 'shannondunlap', 'USER', 'vjohnson@example.net'),
+(4, 'alicia90', 'ADMIN', 'kristi27@example.com'),
+(5, 'chrisrhodes', 'USER', 'heather33@example.org'),
+(6, 'yrivera', 'ADMIN', 'nicolasramirez@example.net'),
+(7, 'hnewman', 'USER', 'vernon22@example.net'),
 (8, 'qlopez', 'X-role', 'tylersara@example.com'),
 (9, 'jennifer74', 'X-role', 'fperez@example.net'),
-(10, 'khudson', 'X-role', 'josephramos@example.com');
+(10, 'user_dummy', 'USER', 'user_dummy@example.com'),
+(11, 'manager_dummy', 'MANAGER', 'manager_dummy@example.com'),
+(12, 'admin_dummy', 'ADMIN', 'admin_dummy@example.com');
+
 
 INSERT INTO files VALUES
 (1, 'what.mp3', '/uploads/what.mp3', 'rejected', 7615039, '2025-06-09 16:39:40', 7),
