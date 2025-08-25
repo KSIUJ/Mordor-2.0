@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from services.authservice import Role
 from fastapi.templating import Jinja2Templates
-from repositories.user_repository import UserWithLimits, user_repo
+from repository.user_repository import UserWithLimits, user_repo
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter(prefix="", tags=["user"])

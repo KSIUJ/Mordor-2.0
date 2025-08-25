@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from repositories.user_repository import User, user_repo
+from repository.user_repository import User, user_repo
 import logging
 
 # Define user roles
