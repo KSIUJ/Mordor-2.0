@@ -1,3 +1,4 @@
+//load available tags from db to tag list
 async function loadTagsFromDB(){
     try {
         const response = await fetch('public/tags')
@@ -26,7 +27,7 @@ function getTagId(tagName) {
     }
     return null
 }
-
+//adds selected tag after clicking button
 function addTag(tagName,tagId){
     const selectedTags = document.getElementById('selectedTags')
 
@@ -35,7 +36,10 @@ function addTag(tagName,tagId){
     li.setAttribute('data-tag-id',tagId)
     li.innerHTML = `${tagName} <button type="button" class="btn-close btn-close-white btn-sm"></button>`
     const allTags=document.getElementById('tagOptions')
+
     li.querySelector('button').addEventListener('click', function(){
+        //delete tag from selected
+
         const tagName = li.textContent.trim()
         const tagId = li.getAttribute('data-tag-id')
 
