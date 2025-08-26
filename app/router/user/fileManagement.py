@@ -27,13 +27,12 @@ async def upload(
 @handle_file_service_errors
 async def update_file(
     request: Request,
-    file: UploadFile = File(...),
     tags: str = Form(...),
     id: int = Form(...),
     name: str = Form(...)
 ):
     tags = json.loads(tags)
-    return await service.update_file(request, file, tags,id, name)
+    return await service.update_file(request, tags,id, name)
 
 @router.get("/get_files")
 @handle_file_service_errors

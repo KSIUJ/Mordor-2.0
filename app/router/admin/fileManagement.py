@@ -38,13 +38,12 @@ async def change_status(request: Request, body: ChangeStatusRequest):
 @handle_file_service_errors
 async def update_file(
     request: Request,
-    file: UploadFile = File(None),
     tags: str = Form(...),
     file_id: int = Form(...),
     name: str = Form(...)
 ):
     tags = json.loads(tags)
-    return await service.update_file(request, file, tags, file_id, name)
+    return await service.update_file(request, tags, file_id, name)
 
 @router.post("/change_tags")
 @handle_file_service_errors

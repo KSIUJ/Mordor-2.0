@@ -103,14 +103,10 @@ class FileRepository:
 
                     await cursor.execute("""
                                          UPDATE files
-                                         SET name     = ?,
-                                             filepath = ?,
-                                             size     = ?
+                                         SET name = ?
                                          WHERE id = ?
                                          """, (
                                              request.filename,
-                                             request.filepath,
-                                             request.size,
                                              request.id
                                          ))
                     await conn.commit()

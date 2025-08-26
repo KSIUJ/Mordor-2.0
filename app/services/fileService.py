@@ -101,7 +101,7 @@ class FileService:
 
         return await self.repo.insert_file_with_tags(add_file_request)
 
-    async def update_file(self, request: Request, file: UploadFile,
+    async def update_file(self, request: Request,
                           tags: list[int], fileId: int, name: str):
         user_auth(request)
 
@@ -111,15 +111,11 @@ class FileService:
         # Authorization checks
         self._validate_file_modification(existing_file, request.state.user)
 
-        # Handle file operations
-        filepath, size = await self._handle_file_operations(file, existing_file)
 
         # Prepare update request
         update_request = UpdateFileRequest(
             id=fileId,
-            filename=name,
-            filepath=filepath,
-            size=size,
+            filename=name
         )
 
         return await self.repo.update_file(update_request, tags)
@@ -134,13 +130,3 @@ class FileService:
         # TODO: Add ownership check
         # if file.uploaded_by != user.id and user.role == Role.USER:
         #     raise HTTPException(status_code=403, detail="Not your file")
-
-    def _handle_file_operations(self, file: UploadFile, existing_file) -> tuple[str, int]:
-        """Handle file operations for update and return (filepath, size)"""
-        if file:
-            # Delete old file and save new one
-            _delete_file_if_exists(existing_file.filepath)
-            return _save_file_to_disk(file)
-        else:
-            # Keep existing file
-            return existing_file.filepath, existing_file.size

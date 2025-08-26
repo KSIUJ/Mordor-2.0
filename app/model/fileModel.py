@@ -35,8 +35,6 @@ class UpdateFileRequest(BaseModel):
     """
     id: int
     filename: str
-    filepath: str
-    size: int
 
 class ChangeStatusRequest(BaseModel):
     """To update status we just need id"""
