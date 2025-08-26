@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 })
 
+//submit button function
 document.addEventListener("DOMContentLoaded", function (){
     const submitButton=document.getElementById('submit')
     submitButton.addEventListener('click',function (){
@@ -27,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function (){
     })
 })
 
+//change status button (for admin)
 document.addEventListener("DOMContentLoaded", function (){
     const statusButton=document.getElementById("changeStatus")
     statusButton.addEventListener('click',function (){
@@ -44,6 +46,7 @@ function getSelectedTagsIds(){
     return tagIds
 }
 
+//func sending update form
 async function updateFile(tags,name){
     const formData=new FormData()
     formData.append("file_id",fileId)
@@ -67,6 +70,7 @@ async function updateFile(tags,name){
     window.location.reload();
 }
 
+//status changer
 async function changeStatus(status) {
     alert(fileId)
     const body={
