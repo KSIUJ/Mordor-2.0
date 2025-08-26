@@ -1,0 +1,10 @@
+body{
+    background-color: #F2F2F2;
+}
+#addTagBtn{
+    background-color: #B6B09F;
+    border-color: #756F60;
+}
+#addTagBtn:hover{
+    background-color: #756F60;
+}
