@@ -18,7 +18,8 @@ def process_files(rows):
             size=row[2],
             uploaded_by=row[3],
             status=FileStatus(row[4]),
-            filepath=row[5]
+            filepath=row[5],
+            uploaded_at=row[6]
         ))
     return files
 
@@ -38,7 +39,7 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status,filepath
+                                         SELECT id, name, size, uploaded_by, status,filepath,uploaded_at
                                          FROM files
                                          WHERE id = ?
                                          """, (fileId,))
@@ -54,7 +55,8 @@ class FileRepository:
                         size=row[2],
                         uploaded_by=row[3],
                         status=FileStatus(row[4]),
-                        filepath=row[5]
+                        filepath=row[5],
+                        uploaded_at=row[6]
                     )
                 except Exception as e:
                     raise DatabaseError()
