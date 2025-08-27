@@ -1,6 +1,7 @@
 import json
 
 from fastapi import APIRouter, UploadFile, File, Form, Request
+from starlette.responses import RedirectResponse
 
 from services.fileService import FileService
 from utils.errorWrapper import handle_file_service_errors
@@ -8,7 +9,7 @@ from utils.errorWrapper import handle_file_service_errors
 router = APIRouter(prefix="/user", tags=["user", "file"])
 service = FileService()
 
-@router.put("/upload")
+@router.post("/upload")
 @handle_file_service_errors
 async def upload(
         request: Request,
@@ -20,8 +21,9 @@ async def upload(
     userId = 1
     #TODO: Enable getting id of logged user
     tags = json.loads(tags)
-    return await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
-
+    await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
+    # return RedirectResponse(url="/upload?success=file send successfully", status_code=303)
+    return None
 
 @router.post("/update_file")
 @handle_file_service_errors
@@ -32,7 +34,10 @@ async def update_file(
     name: str = Form(...)
 ):
     tags = json.loads(tags)
-    return await service.update_file(request, tags,file_id, name)
+    await service.update_file(request, tags,file_id, name)
+    # TODO: Add redirect after form
+    # return RedirectResponse(url="/update",status_code=303)
+    return None
 
 @router.get("/get_files")
 @handle_file_service_errors

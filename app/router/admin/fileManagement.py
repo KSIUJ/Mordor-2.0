@@ -16,7 +16,7 @@ service = FileService()
 async def get_all_files(request: Request):
     return await service.get_all_files(request)
 
-@router.put("/upload")
+@router.post("/upload")
 @handle_file_service_errors
 async def upload(
     request: Request,
@@ -26,24 +26,36 @@ async def upload(
 ):
     userId = 1
     # TODO: Enable getting id of logged user
-    tags = json.loads(tags)
-    return await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
+    if tags is None:
+        tags = []
+    else:
+        tags = json.loads(tags)
+    await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
+    # return RedirectResponse(url="/update",status_code=303)
+    return None
 
 @router.post("/change_status")
 @handle_file_service_errors
 async def change_status(request: Request, body: ChangeStatusRequest):
-    return await service.change_status(request, body)
+    await service.change_status(request, body)
+    # return RedirectResponse(url="/update",status_code=303)
+    return None
 
 @router.post("/update_file")
 @handle_file_service_errors
 async def update_file(
     request: Request,
-    tags: str = Form(...),
+    tags: str = Form(None),
     file_id: int = Form(...),
     name: str = Form(...)
 ):
-    tags = json.loads(tags)
-    return await service.update_file(request, tags, file_id, name)
+    if tags is None:
+        tags=[]
+    else:
+        tags = json.loads(tags)
+    await service.update_file(request, tags, file_id, name)
+    # return RedirectResponse(url="/update",status_code=303)
+    return None
 
 @router.post("/change_tags")
 @handle_file_service_errors
