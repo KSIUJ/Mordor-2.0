@@ -16,6 +16,7 @@ class FileInfo(BaseModel):
     uploaded_by: int
     filepath: str
     status: FileStatus
+    uploaded_at: datetime
 
 
 class AddFileRequest(BaseModel):

@@ -6,7 +6,7 @@ from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from router.admin.fileManagement import router as admin_file_router
 from router.user.fileManagement import router as user_file_router
-from router.user import router as user_router
+from router.User import router as user_router
 from db import db
 import logging
 import asyncio

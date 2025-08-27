@@ -53,7 +53,6 @@ class UserRepository:
                 JOIN users_limits ul ON u.role = ul.user_role
                 WHERE u.id = ?
             """, (user_id,))
-            
             row = await cursor.fetchone()
             if row:
                 return UserWithLimits(
