@@ -5,17 +5,20 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
+from router.admin.fileManagement import router as admin_file_router
+from router.user.fileManagement import router as user_file_router
 from db import db
 import logging
 import asyncio
 from services.authservice import AuthMiddleware, Role
 from parser.parser import parseExpression
-
+from templates import patch_templates
 
 app = FastAPI()
 
 # Configure Jinja2 templates
 templates = Jinja2Templates(directory="templates")
+patch_templates()
 
 # Enable CORS
 app.add_middleware(
@@ -45,7 +48,8 @@ app.add_middleware(AuthMiddleware, config = {
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(health_router)
 app.include_router(test_router)
-
+app.include_router(admin_file_router)
+app.include_router(user_file_router)
 @app.on_event("startup")
 async def startup_event():
     """Initialize database connection on startup with retry logic"""
