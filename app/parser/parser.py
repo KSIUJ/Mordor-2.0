@@ -65,11 +65,11 @@ class Parser:
 
 def parseExpression(expression: str) -> OrNode | AndNode | NotNode | TagNode:
     """
-        Main function that parses a string expression into an abstract syntax tree (AST)
+        Utility function that parses a string expression into an abstract syntax tree (AST)
     """
     tokens = tokenize(expression)
     if not tokens:
-        raise SyntaxError("Empty expression")
+        return 
     
     parser = Parser(tokens)
     ast = parser.parseOrExpr()

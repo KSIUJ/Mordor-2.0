@@ -1,7 +1,8 @@
-from fastapi import FastAPI 
+from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from router.admin.fileManagement import router as admin_file_router
@@ -10,9 +11,12 @@ from db import db
 import logging
 import asyncio
 from services.authservice import AuthMiddleware, Role
+from services.fileService import FileService, user_auth
+from parser.parser import parseExpression
 from templates import patch_templates
 
 app = FastAPI()
+
 
 # Configure Jinja2 templates
 templates = Jinja2Templates(directory="templates")
@@ -78,3 +82,49 @@ async def shutdown_event():
 @app.get("/")
 async def root():
     return {"message": "Hello, World4!"}
+
+@app.get("/placeholder_search")
+async def placeholder():
+    return FileResponse("static/placeholder_search.html")
+
+@app.get("/api/files")
+async def api_files(request: Request, q: str = Query("", max_length=250)):
+    """
+    Endpoint for searching files by tag expressions
+    
+    Args:
+        request : FastAPI request object used for authorization
+        q : Query string with logical tag expression
+
+    Raises:
+        400 BAD_REQUEST: Syntax errors in query expression
+        401 UNAUTHORIZED: permission denied
+        500 INTERNAL_SERVER_ERROR: Unexpected server erorrs
+
+    Returns:
+        List of files matching tag expression
+    """
+    try:
+        user_auth(request)
+        
+        q = q.strip()
+        if not q:
+            try:
+                file_service = FileService()
+                return await file_service.get_accepted_files(request)
+            except PermissionError:
+                return []
+        
+        ast = parseExpression(q)
+        results = await db.get_files_by_tags(ast)
+        
+        return results
+    except PermissionError:
+        raise HTTPException(status_code=401, detail=f"Unauthorized request")
+    except SyntaxError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid syntax: {str(e)}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logging.exception(f"Server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
