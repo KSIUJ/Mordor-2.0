@@ -32,7 +32,8 @@ function addTag(tagName,tagId){
     const selectedTags = document.getElementById('selectedTags')
 
     const li = document.createElement('li')
-    li.className='list-inline-item badge bg-primary'
+    li.className='list-inline-item badge'
+    li.classList.add('tag-badge')
     li.setAttribute('data-tag-id',tagId)
     li.innerHTML = `${tagName} <button type="button" class="btn-close btn-close-white btn-sm"></button>`
     const allTags=document.getElementById('tagOptions')
