@@ -14,9 +14,25 @@
                     input.value = params.get('q')
                     const url = new URL('/api/files', location.origin);
                     url.search = params.toString();
-                    const response = await fetch(url, {method: 'GET'});
-                    const data = await response.json();
-                    console.log(data);
+
+                    try{
+                        const response = await fetch(url, {method: 'GET'});
+
+                        if(!response.ok){
+                            try{
+                                const errorData = await response.json();
+                                console.error(`Error ${response.status}: ${errorData.detail}`);
+                            } catch(error){
+                                console.error(`Error ${response.status}: Response is not a valid JSON`);
+                            }
+                            return
+                        }
+
+                        const data = await response.json();
+                        console.log(data);
+                    } catch(error){
+                        console.error("Error:", error)
+                    }
                 }
             })
 
@@ -28,10 +44,26 @@
                 if (params.get('q')){
                     const url = new URL('/api/files', location.origin);
                     url.search = params.toString();
-                    const response = await fetch(url, {method: 'GET'});
-                    const data = await response.json(); 
-                    console.log(data);
-                    window.history.replaceState({}, '', `?${params.toString()}`);
+
+                    try {
+                        const response = await fetch(url, {method: 'GET'});
+
+                        if(!response.ok){
+                            try{
+                                const errorData = await response.json();
+                                console.error(`Error ${response.status}: ${errorData.detail}`);
+                            } catch(error){
+                                console.error(`Error ${response.status}: Response is not a valid JSON`);
+                            }
+                            return
+                        }
+                        const data = await response.json(); 
+                        console.log(data);
+                        window.history.pushState({}, '', `?${params.toString()}`);
+
+                    } catch(error){
+                        console.error("Error: ", error)
+                    }
                 }
                 else{
                     // to be determined

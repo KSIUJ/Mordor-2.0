@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -82,7 +82,21 @@ async def placeholder():
     return FileResponse("static/placeholder_search.html")
 
 @app.get("/api/files")
-async def api_files(q: str = Query("")):
-    ast = parseExpression(q)
-    results = await db.get_files_by_tags(ast)
-    return results
+async def api_files(q: str = Query("", max_length=250)):
+    try:
+        if not q:
+            return []
+        
+        q = q.strip()
+        
+        ast = parseExpression(q)
+        results = await db.get_files_by_tags(ast)
+        return results
+    
+    except SyntaxError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid syntax: {str(e)}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logging.exception(f"Server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
