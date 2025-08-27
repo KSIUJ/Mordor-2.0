@@ -36,9 +36,9 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health"],
+    Role.USER: ["/test/auth/user", "/health","/user/upload","/user/update_file", "/user/get_files"],
     Role.MANAGER: ["/test/auth/manager"],
-    Role.ADMIN: ["/test/auth/admin"],
+    Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/update_file", "/admin/get_all_files","/admin/change_status"],
 }
 #Add Role Middleware
 app.add_middleware(AuthMiddleware, config = {
@@ -82,3 +82,12 @@ async def shutdown_event():
 @app.get("/")
 async def root():
     return {"message": "Hello, World4!"}
+# Endpoints to check upload and update pages
+# TODO: ??? Remove later ???
+@app.get("/upload")
+async def showUpload(request: Request):
+    return templates.TemplateResponse("fileUpload.html", {"request": request})
+
+@app.get("/update")
+async def showUpload(request: Request):
+    return templates.TemplateResponse("fileUpdate.html", {"request": request})
