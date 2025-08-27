@@ -38,6 +38,7 @@ class DatabaseConnection:
         return aiosqlite.connect(self.db_path)
     
     async def get_files_by_tags(self, ast: str):
+        """Return files from database matching given AST"""
         sql, params = parseAST(ast)
         
         async with aiosqlite.connect(self.db_path) as db:

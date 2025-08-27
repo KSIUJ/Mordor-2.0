@@ -42,7 +42,7 @@ class AST_to_SQL():
         self.params = {}
         self.counter = 0
         sql_where = self._AST_to_SQL(ast)
-        sql = f"SELECT * FROM files WHERE {sql_where}"
+        sql = f"SELECT * FROM files WHERE status = 'accepted' AND {sql_where}"
         
         return sql
 

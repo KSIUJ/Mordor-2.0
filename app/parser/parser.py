@@ -69,7 +69,7 @@ def parseExpression(expression: str) -> OrNode | AndNode | NotNode | TagNode:
     """
     tokens = tokenize(expression)
     if not tokens:
-        raise SyntaxError("Empty expression")
+        return 
     
     parser = Parser(tokens)
     ast = parser.parseOrExpr()
