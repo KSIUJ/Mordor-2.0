@@ -9,8 +9,9 @@
             background-color: #EAE4D5;
             padding: 20px;
         }
-        #updateForm {
+        #uploadForm {
             margin: 0 auto;
+            padding: 20px;
             background-color: #F2F2F2;
         }
         #addTagBtn{
@@ -35,7 +36,7 @@
 <body>
     {% include "navbar.html" %}
     <form action="/user/upload" method="post" enctype="multipart/form-data"
-      class="container border rounded p-4" id="updateForm">
+      class="container border rounded p-4" id="uploadForm">
         <h1>Add entry</h1>
 
         <div class="form-floating">

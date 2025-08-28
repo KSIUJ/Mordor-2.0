@@ -12,8 +12,8 @@
             padding: 20px;
         }
         #updateForm {
+            margin: 0 auto;
             background-color: #F2F2F2;
-           min-height: 100vh;
         }
         #addTagBtn{
             background-color: #B6B09F;
@@ -26,11 +26,21 @@
           background-color: #756F60;
           color: white;
         }
+        .form-label{
+            margin-right: 20px;
+        }
+        .btn-success{
+            margin-top: 40px;
+        }
     </style>
 </head>
 <body>
     {% include "navbar.html" %}
-    <form action="/user/update_file" method="post" enctype="multipart/form-data">
+    <form action="/user/update_file" method="post" enctype="multipart/form-data"
+          id="updateForm" class="container border rounded p-4">
+        <input type="hidden" name="fileId" id="fileId"
+            value="1">
+
         <h1>Modify entry</h1>
         <div class="form-floating">
             <input class="form-control w-50" type="text" id="fileName" name="name" placeholder="File name:">

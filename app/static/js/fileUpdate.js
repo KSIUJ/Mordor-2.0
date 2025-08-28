@@ -38,7 +38,7 @@ async function changeStatus(status) {
     const res=await fetch(`/${role}/change_status`,{
         method: "POST",
         headers: {
-                "Content-Type": "application/json",  // ✅ WAŻNE!
+                "Content-Type": "application/json",
         },
         body: JSON.stringify(body)
     })
