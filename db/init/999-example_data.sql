@@ -16,29 +16,32 @@ INSERT INTO tags VALUES
 (15, 'notation');
 
 INSERT INTO users_limits VALUES
-('admin', 89000000, 38),
-('user', 9000000, 10),
+('ADMIN', 89000000, 38),
+('USER', 9000000, 10),
 ('X-role', 45000000, 16);
 
 INSERT INTO users VALUES
-(1, 'jdixon', 'user', 'hwoodard@example.com'),
-(2, 'tgutierrez', 'user', 'xhubbard@example.net'),
-(3, 'shannondunlap', 'user', 'vjohnson@example.net'),
-(4, 'alicia90', 'admin', 'kristi27@example.com'),
-(5, 'chrisrhodes', 'user', 'heather33@example.org'),
-(6, 'yrivera', 'admin', 'nicolasramirez@example.net'),
-(7, 'hnewman', 'user', 'vernon22@example.net'),
+(1, 'jdixon', 'USER', 'hwoodard@example.com'),
+(2, 'tgutierrez', 'USER', 'xhubbard@example.net'),
+(3, 'shannondunlap', 'USER', 'vjohnson@example.net'),
+(4, 'alicia90', 'ADMIN', 'kristi27@example.com'),
+(5, 'chrisrhodes', 'USER', 'heather33@example.org'),
+(6, 'yrivera', 'ADMIN', 'nicolasramirez@example.net'),
+(7, 'hnewman', 'USER', 'vernon22@example.net'),
 (8, 'qlopez', 'X-role', 'tylersara@example.com'),
 (9, 'jennifer74', 'X-role', 'fperez@example.net'),
-(10, 'khudson', 'X-role', 'josephramos@example.com');
+(10, 'user_dummy', 'USER', 'user_dummy@example.com'),
+(11, 'manager_dummy', 'MANAGER', 'manager_dummy@example.com'),
+(12, 'admin_dummy', 'ADMIN', 'admin_dummy@example.com');
+
 
 INSERT INTO files VALUES
-(1, 'what.mp3', '/uploads/what.mp3', 'rejected', 7615039, '2025-06-09 16:39:40', 7),
-(2, 'fine.bmp', '/uploads/fine.bmp', 'accepted', 6849018, '2025-06-29 12:00:51', 8),
+(1, 'what.mp3', '/uploads/what.mp3', 'rejected', 7615039, '2025-06-09 16:39:40', 10),
+(2, 'fine.bmp', '/uploads/fine.bmp', 'accepted', 6849018, '2025-06-29 12:00:51', 10),
 (3, 'pull.flac', '/uploads/pull.flac', 'rejected', 1528738, '2025-06-25 06:49:21', 6),
 (4, 'history.png', '/uploads/history.png', 'rejected', 8234067, '2025-01-24 09:23:53', 10),
 (5, 'tree.mp3', '/uploads/tree.mp3', 'accepted', 1622514, '2025-02-04 23:11:17', 8),
-(6, 'put.html', '/uploads/put.html', 'pending', 8509849, '2025-04-30 08:51:31', 7),
+(6, 'put.html', '/uploads/put.html', 'pending', 8509849, '2025-04-30 08:51:31', 10),
 (7, 'someone.doc', '/uploads/someone.doc', 'pending', 7005587, '2025-01-12 23:50:28', 4),
 (8, 'fish.css', '/uploads/fish.css', 'rejected', 5240994, '2025-01-12 05:36:16', 1),
 (9, 'answer.wav', '/uploads/answer.wav', 'accepted', 6741545, '2025-02-05 03:18:18', 7),
@@ -53,8 +56,8 @@ INSERT INTO files VALUES
 (18, 'provide.mp3', '/uploads/provide.mp3', 'accepted', 9099444, '2025-06-26 18:22:18', 10),
 (19, 'up.webm', '/uploads/up.webm', 'rejected', 4920855, '2025-01-18 11:02:35', 4),
 (20, 'another.css', '/uploads/another.css', 'pending', 9547435, '2025-04-09 18:37:26', 9),
-(21, 'visit.tiff', '/uploads/visit.tiff', 'pending', 9088959, '2025-03-24 22:08:49', 4),
-(22, 'expert.xls', '/uploads/expert.xls', 'pending', 9911846, '2025-05-31 18:30:35', 9),
+(21, 'visit.tiff', '/uploads/visit.tiff', 'pending', 9088959, '2025-03-24 22:08:49', 10),
+(22, 'expert.xls', '/uploads/expert.xls', 'pending', 9911846, '2025-05-31 18:30:35', 10),
 (23, 'sense.bmp', '/uploads/sense.bmp', 'accepted', 5309729, '2025-03-28 11:20:13', 3),
 (24, 'quite.jpeg', '/uploads/quite.jpeg', 'accepted', 4938840, '2025-04-04 12:42:41', 10),
 (25, 'here.js', '/uploads/here.js', 'pending', 1283403, '2025-03-21 05:39:21', 3),
@@ -65,7 +68,7 @@ INSERT INTO files VALUES
 (30, 'today.mp3', '/uploads/today.mp3', 'rejected', 6855144, '2025-06-12 02:54:43', 5),
 (31, 'position.html', '/uploads/position.html', 'accepted', 155882, '2025-02-04 05:54:26', 6),
 (32, 'need.png', '/uploads/need.png', 'rejected', 9157370, '2025-07-27 11:53:36', 7),
-(33, 'nice.js', '/uploads/nice.js', 'rejected', 677141, '2025-06-12 14:45:13', 4),
+(33, 'nice.js', '/uploads/nice.js', 'rejected', 677141, '2025-06-12 14:45:13', 10),
 (34, 'spend.mp4', '/uploads/spend.mp4', 'accepted', 3157363, '2025-02-21 21:41:07', 10),
 (35, 'as.gif', '/uploads/as.gif', 'pending', 5549736, '2025-03-26 06:52:41', 7),
 (36, 'turn.xls', '/uploads/turn.xls', 'pending', 6485576, '2025-01-11 12:52:40', 5),
@@ -74,13 +77,13 @@ INSERT INTO files VALUES
 (39, 'type.bmp', '/uploads/type.bmp', 'rejected', 6545655, '2025-06-14 11:13:58', 7),
 (40, 'central.mov', '/uploads/central.mov', 'accepted', 7410667, '2025-06-22 22:58:23', 3),
 (41, 'forward.css', '/uploads/forward.css', 'pending', 3237547, '2025-07-20 11:16:23', 6),
-(42, 'food.wav', '/uploads/food.wav', 'pending', 214184, '2025-07-08 21:30:36', 4),
-(43, 'prove.numbers', '/uploads/prove.numbers', 'accepted', 5345218, '2025-05-08 05:58:45', 1),
+(42, 'food.wav', '/uploads/food.wav', 'pending', 214184, '2025-07-08 21:30:36', 10),
+(43, 'prove.numbers', '/uploads/prove.numbers', 'accepted', 5345218, '2025-05-08 05:58:45', 10),
 (44, 'assume.mov', '/uploads/assume.mov', 'rejected', 1653569, '2025-04-26 21:19:37', 6),
 (45, 'until.html', '/uploads/until.html', 'rejected', 8526780, '2025-06-19 09:46:29', 7),
 (46, 'model.mp3', '/uploads/model.mp3', 'accepted', 5181884, '2025-05-16 10:28:26', 9),
 (47, 'attention.numbers', '/uploads/attention.numbers', 'rejected', 6273307, '2025-01-07 17:25:24', 6),
-(48, 'main.mov', '/uploads/main.mov', 'pending', 7048106, '2025-03-07 19:24:47', 6),
+(48, 'main.mov', '/uploads/main.mov', 'pending', 7048106, '2025-03-07 19:24:47', 10),
 (49, 'cultural.flac', '/uploads/cultural.flac', 'rejected', 273034, '2025-03-07 00:04:19', 4),
 (50, 'once.jpg', '/uploads/once.jpg', 'pending', 8052140, '2025-05-19 11:09:44', 4);
 

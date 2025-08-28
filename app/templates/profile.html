@@ -1,0 +1,183 @@
+{% extends "base.html" %} {% block title %}Profile{% endblock %} {% block head %}
+<style>
+  body {
+    background-color: #eae4d5;
+    color: #111111;
+  }
+  .container {
+    background-color: #f2f2f2;
+    transform-origin: top left;
+    min-height: 100vh;
+  }
+  .text-secondary {
+    color: #b6b09f;
+  }
+  .table th,
+  .table td {
+    vertical-align: middle;
+  }
+  .table thead {
+    background-color: #eae4d5;
+  }
+  .sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+  }
+  .sortable:hover {
+    background-color: #d4cdb7;
+  }
+  .sortable::after {
+    content: ' ↕';
+    opacity: 0.5;
+    font-size: 0.8em;
+  }
+  .sortable.asc::after {
+    content: ' ↑';
+    opacity: 1;
+  }
+  .sortable.desc::after {
+    content: ' ↓';
+    opacity: 1;
+  }
+</style>
+{% endblock %} {% block content %}
+
+<div class="container border rounded p-4">
+  <div class="row">
+    <div class="col-md-4">
+      <h3>User profile</h3>
+
+      <h5 class="mt-4 text-secondary">Personal info</h5>
+      <p><strong>Name:</strong> {{ name }}</p>
+      <p><strong>Email:</strong> {{ email }}</p>
+
+      <h5 class="mt-4 text-secondary">Quota</h5>
+      <p><strong>Size limit:</strong> {{ size_limit }}</p>
+      <p><strong>Number limit:</strong> {{ number_limit }}</p>
+    </div>
+
+    <div class="col-md-8">
+      <h3>Uploaded files</h3>
+      <table class="table table-bordered mt-3" id="filesTable">
+        <thead>
+          <tr>
+            <th class="sortable" data-column="0" data-type="number">File ID</th>
+            <th class="sortable" data-column="1" data-type="text">File name</th>
+            <th class="sortable" data-column="2" data-type="status">Status</th>
+            <th class="sortable" data-column="3" data-type="number">Size</th>
+            <th class="sortable" data-column="4" data-type="date">Uploaded at</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files %}
+          <tr>
+            <td>{{ file.id }}</td>
+            <td>{{ file.name }}</td>
+            {%if file.status == "accepted"%}
+            <td style="color: #00d138">{{ file.status }}</td>
+            {%elif file.status == "pending"%}
+            <td style="color: #d4d406ff">{{ file.status }}</td>
+            {%elif file.status == "rejected"%}
+            <td style="color: #c40606d7">{{ file.status }}</td>
+            {%else%}
+            <td style="color: #8c00ffff">Undefined Status</td>
+            {% endif%}
+            <td>{{ file.size }}</td>
+            <td>{{ file.uploaded_at }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center">No files uploaded</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('filesTable');
+    const tbody = table.querySelector('tbody');
+    const headers = table.querySelectorAll('th.sortable');
+    
+    let currentSort = { column: -1, direction: 'asc' };
+    
+    const statusPriority = {
+        'pending': 1,
+        'rejected': 2,
+        'accepted': 3
+    };
+    
+    function sortTable(columnIndex, dataType) {
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        if (rows.length === 1 && rows[0].cells[0].getAttribute('colspan')) {
+            return;
+        }
+        
+        const direction = (currentSort.column === columnIndex && currentSort.direction === 'asc') ? 'desc' : 'asc';
+        
+        rows.sort((a, b) => {
+            let aVal = a.cells[columnIndex].textContent.trim();
+            let bVal = b.cells[columnIndex].textContent.trim();
+            
+            let comparison = 0;
+            
+            switch (dataType) {
+                case 'number':
+                    if (columnIndex === 3) { 
+                        comparison = parseInt(aVal) - parseInt(bVal);
+                    } else { 
+                        comparison = parseInt(aVal) - parseInt(bVal);
+                    }
+                    break;
+                    
+                case 'text':
+                    comparison = aVal.toLowerCase().localeCompare(bVal.toLowerCase());
+                    break;
+                    
+                case 'status':
+                    const aPriority = statusPriority[aVal.toLowerCase()] || 999;
+                    const bPriority = statusPriority[bVal.toLowerCase()] || 999;
+                    comparison = aPriority - bPriority;
+                    break;
+                    
+                case 'date':
+                    comparison = new Date(aVal) - new Date(bVal);
+                    break;
+                    
+                default:
+                    comparison = aVal.localeCompare(bVal);
+            }
+            
+            return direction === 'asc' ? comparison : -comparison;
+        });
+        
+
+        currentSort.column = columnIndex;
+        currentSort.direction = direction;
+        
+
+        headers.forEach(header => {
+            header.classList.remove('asc', 'desc');
+        });
+        headers[columnIndex].classList.add(direction);
+        
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+    
+
+    headers.forEach((header, index) => {
+        header.addEventListener('click', () => {
+            const dataType = header.getAttribute('data-type');
+            sortTable(index, dataType);
+        });
+    });
+});
+</script>
+
+{% endblock %}
