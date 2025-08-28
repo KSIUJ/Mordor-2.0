@@ -91,7 +91,7 @@ class FileRepository:
                     return files
                 except Exception as e:
                     raise DatabaseError()
-
+                    
     async def get_user_uploaded_files(self, user: UserWithLimits):
             """Returns basic info about accepted files to common user"""
             async with self.db.get_connection() as conn:
@@ -248,7 +248,6 @@ class FileRepository:
                     conn.close()
                     return None
                 except Exception as e:
-                    raise DatabaseError()
-                
-                
+                    raise DatabaseError()      
 file_repo = FileRepository()
+

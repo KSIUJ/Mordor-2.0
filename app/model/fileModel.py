@@ -18,7 +18,6 @@ class FileInfo(BaseModel):
     status: FileStatus
     uploaded_at: datetime
 
-
 class AddFileRequest(BaseModel):
     """To add a file we need its model & selected tags"""
     filename: str
