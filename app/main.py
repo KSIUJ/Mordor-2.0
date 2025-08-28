@@ -2,10 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from fastapi import Request
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from router.admin.fileManagement import router as admin_file_router
 from router.user.fileManagement import router as user_file_router
+from router.public.basicQuery import router as public_router
 from db import db
 import logging
 import asyncio
@@ -33,9 +36,9 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health"],
+    Role.USER: ["/test/auth/user", "/health","/user/upload","/user/update_file", "/user/get_files"],
     Role.MANAGER: ["/test/auth/manager"],
-    Role.ADMIN: ["/test/auth/admin"],
+    Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/update_file", "/admin/get_all_files","/admin/change_status"],
 }
 #Add Role Middleware
 app.add_middleware(AuthMiddleware, config = {
@@ -48,6 +51,7 @@ app.include_router(health_router)
 app.include_router(test_router)
 app.include_router(admin_file_router)
 app.include_router(user_file_router)
+app.include_router(public_router)
 @app.on_event("startup")
 async def startup_event():
     """Initialize database connection on startup with retry logic"""
@@ -78,3 +82,12 @@ async def shutdown_event():
 @app.get("/")
 async def root():
     return {"message": "Hello, World4!"}
+# Endpoints to check upload and update pages
+# TODO: ??? Remove later ???
+@app.get("/upload")
+async def showUpload(request: Request):
+    return templates.TemplateResponse("fileUpload.html", {"request": request})
+
+@app.get("/update")
+async def showUpload(request: Request):
+    return templates.TemplateResponse("fileUpdate.html", {"request": request})

@@ -16,6 +16,7 @@ class FileInfo(BaseModel):
     uploaded_by: int
     filepath: str
     status: FileStatus
+    uploaded_at: datetime=None
 
 
 class AddFileRequest(BaseModel):
@@ -35,8 +36,6 @@ class UpdateFileRequest(BaseModel):
     """
     id: int
     filename: str
-    filepath: str
-    size: int
 
 class ChangeStatusRequest(BaseModel):
     """To update status we just need id"""

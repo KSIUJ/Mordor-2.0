@@ -13,20 +13,6 @@ from services.authservice import User, Role
 UPLOAD_DIR=Path(os.getenv("UPLOAD_DIR", "uploads"))
 
 
-# ==================== AUTH FUNCTIONS ====================
-def admin_auth(request: Request):
-    """For functions that require admin access"""
-    user = request.state.user
-    if user.role not in [Role.ADMIN]:
-        raise PermissionError
-
-
-def user_auth(request: Request):
-    """For functions that require user access"""
-    user = request.state.user
-    if user.role not in [Role.ADMIN, Role.USER, Role.MANAGER]:
-        raise PermissionError
-
 
 # ==================== FILE OPERATIONS ====================
 async def _save_file_to_disk(file: UploadFile) -> tuple[str, int]:
@@ -58,29 +44,23 @@ class FileService:
 
     # ==================== ADMIN OPERATIONS ====================
     async def get_all_files(self, request: Request):
-        admin_auth(request)
         return await self.repo.get_all_files()
 
     async def change_status(self, req: Request, request: ChangeStatusRequest):
-        admin_auth(req)
         return await self.repo.change_status(request)
 
     async def change_tags(self, req: Request,fileId:int, tags: List[int]):
-        admin_auth(req)
         return await self.repo.update_tags(fileId, tags)
 
     async def delete_file(self, req: Request, fileId: int):
-        admin_auth(req)
         return await self.repo.delete_file(fileId)
 
     # ==================== USER OPERATIONS ====================
     async def get_accepted_files(self, request: Request):
-        user_auth(request)
         return await self.repo.get_accepted_files()
 
     async def upload_file(self, request: Request, file: UploadFile,
                           tags: list[int], userId: int, name: str):
-        user_auth(request)
         # Save file and get metadata
         filepath, size = await _save_file_to_disk(file)
 
@@ -101,9 +81,8 @@ class FileService:
 
         return await self.repo.insert_file_with_tags(add_file_request)
 
-    async def update_file(self, request: Request, file: UploadFile,
+    async def update_file(self, request: Request,
                           tags: list[int], fileId: int, name: str):
-        user_auth(request)
 
         # Get existing file
         existing_file = await self.repo.get_file_by_id(fileId)
@@ -111,15 +90,11 @@ class FileService:
         # Authorization checks
         self._validate_file_modification(existing_file, request.state.user)
 
-        # Handle file operations
-        filepath, size = await self._handle_file_operations(file, existing_file)
 
         # Prepare update request
         update_request = UpdateFileRequest(
             id=fileId,
-            filename=name,
-            filepath=filepath,
-            size=size,
+            filename=name
         )
 
         return await self.repo.update_file(update_request, tags)
@@ -129,18 +104,9 @@ class FileService:
         """Validate if user can modify the file"""
         if file.status != FileStatus.PENDING and user.role == Role.USER:
             #   TODO maybe change type
-            raise ValueError
+            #raise ValueError
+            pass
 
         # TODO: Add ownership check
         # if file.uploaded_by != user.id and user.role == Role.USER:
         #     raise HTTPException(status_code=403, detail="Not your file")
-
-    def _handle_file_operations(self, file: UploadFile, existing_file) -> tuple[str, int]:
-        """Handle file operations for update and return (filepath, size)"""
-        if file:
-            # Delete old file and save new one
-            _delete_file_if_exists(existing_file.filepath)
-            return _save_file_to_disk(file)
-        else:
-            # Keep existing file
-            return existing_file.filepath, existing_file.size
