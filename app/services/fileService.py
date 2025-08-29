@@ -81,31 +81,39 @@ class FileService:
 
         return await self.repo.insert_file_with_tags(add_file_request)
 
-    async def update_file(self, request: Request,
+    async def update_file(self, request: Request, file: UploadFile,
                           tags: list[int], fileId: int, name: str):
 
-        # Get existing file
         existing_file = await self.repo.get_file_by_id(fileId)
 
-        # Authorization checks
-        self._validate_file_modification(existing_file, request.state.user)
+        # if existing_file.status != FileStatus.PENDING:
+        #     raise HTTPException(status_code=403, detail=f"File {fileId} is not pending.")
+        if file:
 
+            # Delete old file
+            filePath = Path(existing_file.filepath)
 
-        # Prepare update request
-        update_request = UpdateFileRequest(
+            if filePath.exists():
+                #change content
+                with open(filePath, "wb") as f:
+                    content = await file.read()
+                    f.write(content)
+                    size=len(content)
+        updateFileRequest = UpdateFileRequest(
             id=fileId,
-            filename=name
+            filename=name,
+            size=size,
+            uploaded_at=datetime.now(),
+            version=existing_file.version+1
         )
-
-        return await self.repo.update_file(update_request, tags)
+        return await self.repo.update_file(updateFileRequest, tags)
 
     # ==================== PRIVATE HELPER METHODS ====================
     def _validate_file_modification(self, file, user: User):
         """Validate if user can modify the file"""
-        if file.status != FileStatus.PENDING and user.role == Role.USER:
+        if file.status != FileStatus.PENDING:
             #   TODO maybe change type
-            #raise ValueError
-            pass
+            raise ValueError
 
         # TODO: Add ownership check
         # if file.uploaded_by != user.id and user.role == Role.USER:

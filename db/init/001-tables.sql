@@ -21,7 +21,8 @@ CREATE TABLE files (
   status varchar DEFAULT 'pending',    -- File status: pending/accepted/rejected
   size integer NOT NULL,               -- File size in bytes
   uploaded_at timestamp DEFAULT CURRENT_TIMESTAMP,               -- Timestamp of upload
-  uploaded_by integer REFERENCES users(id)  -- User who uploaded the file
+  uploaded_by integer REFERENCES users(id),  -- User who uploaded the file
+  version integer                           --  to control users who update uploaded file
 );
 
 -- Files recently opened by users

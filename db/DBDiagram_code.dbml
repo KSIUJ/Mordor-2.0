@@ -30,6 +30,7 @@ Table files {
   size integer [not null, note:"file size"]
   uploaded_at timestamp [note: 'current timestamp by default (cant set timestamp in DMBL)']
   uploaded_by integer [ref:> users.id]
+  version integer
   indexes {
     (status)
   }

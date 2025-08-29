@@ -2,6 +2,8 @@ import json
 from typing import List
 
 from fastapi import APIRouter, UploadFile, File, Form, Request, Body
+from starlette.responses import RedirectResponse
+
 from model.fileModel import ChangeStatusRequest, ChangeTagsRequest
 from services.fileService import FileService
 from utils.errorWrapper import handle_file_service_errors
@@ -31,9 +33,7 @@ async def upload(
     else:
         tags = json.loads(tags)
     await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
-    # return RedirectResponse(url="/update",status_code=303)
-    return None
-
+    return RedirectResponse(url="/update",status_code=303)
 @router.post("/change_status")
 @handle_file_service_errors
 async def change_status(request: Request, body: ChangeStatusRequest):
@@ -45,6 +45,7 @@ async def change_status(request: Request, body: ChangeStatusRequest):
 @handle_file_service_errors
 async def update_file(
     request: Request,
+    file: UploadFile = File(...),
     tags: str = Form(None),
     file_id: int = Form(...),
     name: str = Form(...)
@@ -53,9 +54,8 @@ async def update_file(
         tags=[]
     else:
         tags = json.loads(tags)
-    await service.update_file(request, tags, file_id, name)
-    # return RedirectResponse(url="/update",status_code=303)
-    return None
+    await service.update_file(request,file, tags, file_id, name)
+    return RedirectResponse(url="/update",status_code=303)
 
 @router.post("/change_tags")
 @handle_file_service_errors

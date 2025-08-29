@@ -39,7 +39,7 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status,filepath,uploaded_at
+                                         SELECT id, name, size, uploaded_by, status,filepath,uploaded_at,version
                                          FROM files
                                          WHERE id = ?
                                          """, (fileId,))
@@ -56,7 +56,8 @@ class FileRepository:
                         uploaded_by=row[3],
                         status=FileStatus(row[4]),
                         filepath=row[5],
-                        uploaded_at=row[6]
+                        uploaded_at=row[6],
+                        version=row[7]
                     )
                 except Exception as e:
                     raise DatabaseError()
@@ -98,17 +99,21 @@ class FileRepository:
 
 
     async def update_file(self, request: UpdateFileRequest,tags):
+        return request.json()
         """Update file metadata"""
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 try:
-
+                    return request.json()
                     await cursor.execute("""
                                          UPDATE files
-                                         SET name = ?
+                                         SET name = ?,size = ?,uploaded_at = ?,version= ?
                                          WHERE id = ?
                                          """, (
                                              request.filename,
+                                             request.size,
+                                             request.uploaded_at,
+                                             request.version,
                                              request.id
                                          ))
                     await conn.commit()
@@ -175,8 +180,8 @@ class FileRepository:
 
                     status_value = request.status.value if isinstance(request.status, Enum) else request.status
                     await cursor.execute("""
-                                            INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by)
-                                            VALUES (?, ?, ?, ?, ?, ?)
+                                            INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by,version)
+                                            VALUES (?, ?, ?, ?, ?, ?,1)
                                         """, (
                         request.filename,
                         request.filepath,
