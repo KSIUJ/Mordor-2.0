@@ -32,6 +32,9 @@
         .btn-success{
             margin-top: 40px;
         }
+        .form-control{
+            margin: 10px 0 10px 10px;
+        }
     </style>
 </head>
 <body>
@@ -39,13 +42,16 @@
     <form action="/user/update_file" method="post" enctype="multipart/form-data"
           id="updateForm" class="container border rounded p-4">
         <input type="hidden" name="file_id" id="fileId"
-            value="1">
+            value="53">
 
         <h1>Modify entry</h1>
         <div class="form-floating">
             <input class="form-control w-50" type="text" id="fileName" name="name" placeholder="File name:">
             <label for="fileName">File name:</label>
         </div>
+        <label class="form-label" for="uploadedFile">Uploaded file:</label>
+        <input class="form-control w-50" type="file" id="uploadedFile" name="file">
+
         <div class="d-flex align-items-center mb-3">
             <label class="form-label" for="fileStatus">File status:</label>
             <select class="form-select w-25" aria-label="Select status" id="fileStatus" style="margin-left: 10px">
