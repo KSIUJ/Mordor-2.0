@@ -99,12 +99,10 @@ class FileRepository:
 
 
     async def update_file(self, request: UpdateFileRequest,tags):
-        return request.json()
         """Update file metadata"""
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 try:
-                    return request.json()
                     await cursor.execute("""
                                          UPDATE files
                                          SET name = ?,size = ?,uploaded_at = ?,version= ?
@@ -123,7 +121,6 @@ class FileRepository:
                     await self.update_tags(request.id,tags)
 
                     conn.close()
-                    return None
                 except Exception as e:
                     raise DatabaseError()
 

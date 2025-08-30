@@ -45,6 +45,7 @@ class ChangeStatusRequest(BaseModel):
     """To update status we just need id"""
     file_id: int
     status: FileStatus
+    version: int
 
 class ChangeTagsRequest(BaseModel):
     """To update tags we need id and new list of tags"""

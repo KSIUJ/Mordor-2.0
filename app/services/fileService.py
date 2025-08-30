@@ -47,6 +47,10 @@ class FileService:
         return await self.repo.get_all_files()
 
     async def change_status(self, req: Request, request: ChangeStatusRequest):
+        existing_file= await self.repo.get_file_by_id(request.file_id)
+        if existing_file.version != request.version:
+            #TODO : modify code
+            raise PermissionError
         return await self.repo.change_status(request)
 
     async def change_tags(self, req: Request,fileId:int, tags: List[int]):
