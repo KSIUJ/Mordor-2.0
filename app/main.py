@@ -11,7 +11,7 @@ from db import db
 import logging
 import asyncio
 from services.authservice import AuthMiddleware, Role
-from services.fileService import FileService, user_auth
+from services.fileService import FileService
 from parser.parser import parseExpression
 from templates import patch_templates
 
@@ -37,7 +37,7 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health"],
+    Role.USER: ["/test/auth/user", "/health", "/api/files"],
     Role.MANAGER: ["/test/auth/manager"],
     Role.ADMIN: ["/test/auth/admin"],
 }
@@ -98,14 +98,12 @@ async def api_files(request: Request, q: str = Query("", max_length=250)):
 
     Raises:
         400 BAD_REQUEST: Syntax errors in query expression
-        401 UNAUTHORIZED: permission denied
         500 INTERNAL_SERVER_ERROR: Unexpected server erorrs
 
     Returns:
         List of files matching tag expression
     """
     try:
-        user_auth(request)
         
         q = q.strip()
         if not q:
@@ -119,8 +117,6 @@ async def api_files(request: Request, q: str = Query("", max_length=250)):
         results = await db.get_files_by_tags(ast)
         
         return results
-    except PermissionError:
-        raise HTTPException(status_code=401, detail=f"Unauthorized request")
     except SyntaxError as e:
         raise HTTPException(status_code=400, detail=f"Invalid syntax: {str(e)}")
     except ValueError as e:
