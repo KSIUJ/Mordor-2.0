@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-from fastapi import APIRouter, UploadFile, File, Form, Request, Body
+from fastapi import APIRouter, UploadFile, File, Form,Request, Body
 from starlette.responses import RedirectResponse
 
 from model.fileModel import ChangeStatusRequest, ChangeTagsRequest, FileStatus
@@ -15,8 +15,8 @@ service = FileService()
 
 @router.get("/get_all_files")
 @handle_file_service_errors
-async def get_all_files(request: Request):
-    return await service.get_all_files(request)
+async def get_all_files():
+    return await service.get_all_files()
 
 @router.post("/upload")
 @handle_file_service_errors
@@ -37,19 +37,17 @@ async def upload(
 @router.post("/change_status")
 @handle_file_service_errors
 async def change_status(
-    request: Request,
     file_id: int = Form(...),
     status: FileStatus = Form(...),
     version: int = Form(...)
 ):
     req=ChangeStatusRequest(file_id=file_id, status=status,version=version)
-    return await service.change_status(request, req)
+    await service.change_status(req)
     return RedirectResponse(url="/update",status_code=303)
 
 @router.post("/update_file")
 @handle_file_service_errors
 async def update_file(
-    request: Request,
     file: UploadFile = File(...),
     tags: str = Form(None),
     file_id: int = Form(...),
@@ -59,21 +57,19 @@ async def update_file(
         tags=[]
     else:
         tags = json.loads(tags)
-    await service.update_file(request,file, tags, file_id, name)
+    await service.update_file(file=file, tags=tags, fileId=file_id, name=name)
     return RedirectResponse(url="/update",status_code=303)
 
 @router.post("/change_tags")
 @handle_file_service_errors
 async def change_tags(
-    request: Request,
     changeReq: ChangeTagsRequest = Body(...)
 ):
-    return await service.change_tags(request, changeReq.file_id,changeReq.tags)
+    return await service.change_tags(changeReq.file_id,changeReq.tags)
 
 @router.delete("/delete_file/{file_id}")
 @handle_file_service_errors
 async def delete_file(
-    request: Request,
     file_id: int
 ):
-    return await service.delete_file(request, file_id)
+    return await service.delete_file(file_id)

@@ -1,18 +1,13 @@
 //load available tags from db to tag list
 async function loadTagsFromDB(){
     try {
-        const response = await fetch('public/tags')
+        const response = await fetch('user/get_tags')
         const tags = await response.json()
 
         const datalist = document.getElementById('tagOptions')
-        datalist.innerHTML = ''
-
-        tags.forEach(tag => {
-            const option = document.createElement('option')
-            option.value = tag.name
-            option.setAttribute('data-id',tag.id)
-            datalist.appendChild(option)
-        })
+        datalist.innerHTML = tags.map(tag =>
+        `<option value="${tag.name}" data-id="${tag.id}"></option>`
+    ).join('')
     }catch (e){
         console.error(e)
     }

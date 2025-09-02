@@ -43,24 +43,24 @@ class FileService:
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
     # ==================== ADMIN OPERATIONS ====================
-    async def get_all_files(self, request: Request):
+    async def get_all_files(self):
         return await self.repo.get_all_files()
 
-    async def change_status(self, req: Request, request: ChangeStatusRequest):
+    async def change_status(self, request: ChangeStatusRequest):
         existing_file= await self.repo.get_file_by_id(request.file_id)
         if existing_file.version != request.version:
             #TODO : modify code
             raise PermissionError
         return await self.repo.change_status(request)
 
-    async def change_tags(self, req: Request,fileId:int, tags: List[int]):
+    async def change_tags(self, fileId:int, tags: List[int]):
         return await self.repo.update_tags(fileId, tags)
 
-    async def delete_file(self, req: Request, fileId: int):
+    async def delete_file(self,  fileId: int):
         return await self.repo.delete_file(fileId)
 
     # ==================== USER OPERATIONS ====================
-    async def get_accepted_files(self, request: Request):
+    async def get_accepted_files(self):
         return await self.repo.get_accepted_files()
 
     async def upload_file(self, request: Request, file: UploadFile,
@@ -85,7 +85,7 @@ class FileService:
 
         return await self.repo.insert_file_with_tags(add_file_request)
 
-    async def update_file(self, request: Request, file: UploadFile,
+    async def update_file(self, file: UploadFile,
                           tags: list[int], fileId: int, name: str):
 
         existing_file = await self.repo.get_file_by_id(fileId)

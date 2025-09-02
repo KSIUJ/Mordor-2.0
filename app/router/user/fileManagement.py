@@ -1,6 +1,6 @@
 import json
 
-from fastapi import APIRouter, UploadFile, File, Form, Request
+from fastapi import APIRouter, UploadFile, File, Form,Request,Body
 from starlette.responses import RedirectResponse
 
 from services.fileService import FileService
@@ -27,18 +27,17 @@ async def upload(
 @router.post("/update_file")
 @handle_file_service_errors
 async def update_file(
-    request: Request,
     file: UploadFile = File(...),
     tags: str = Form(None),
     file_id: int = Form(...),
     name: str = Form(...)
 ):
     tags = json.loads(tags)
-    await service.update_file(request,file, tags,file_id, name)
+    await service.update_file(file, tags,file_id, name)
     return RedirectResponse(url="/update",status_code=303)
 
 @router.get("/get_files")
 @handle_file_service_errors
-async def get_files(request: Request):
-    result = await service.get_accepted_files(request)
+async def get_files():
+    result = await service.get_accepted_files()
     return result
