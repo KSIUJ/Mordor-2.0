@@ -2,7 +2,7 @@ from db import db
 from model.exceptions import DatabaseError
 from model.tagModel import TagModel
 
-class PublicRepository:
+class TagRepository:
     def __init__(self):
         self.db = db
     async def get_tags(self):

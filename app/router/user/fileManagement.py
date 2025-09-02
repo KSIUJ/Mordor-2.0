@@ -34,7 +34,7 @@ async def update_file(
     name: str = Form(...)
 ):
     tags = json.loads(tags)
-    return await service.update_file(request,file, tags,file_id, name)
+    await service.update_file(request,file, tags,file_id, name)
     return RedirectResponse(url="/update",status_code=303)
 
 @router.get("/get_files")
