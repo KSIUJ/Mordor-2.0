@@ -37,8 +37,13 @@
 </head>
 <body>
     {% include "navbar.html" %}
+    {% if is_admin %}
+    <form action="/admin/update_file" method="post" enctype="multipart/form-data"
+          id="updateForm" class="container border rounded p-4">
+    {% elif is_user %}
     <form action="/user/update_file" method="post" enctype="multipart/form-data"
           id="updateForm" class="container border rounded p-4">
+    {% endif %}
         {# TODO: remove dummy values below    #}
         <input type="hidden" name="file_id" id="fileId"
             value="53">
@@ -68,7 +73,7 @@
 
         </div>
     </form>
-
+    {% if is_admin %}
     <form action="/admin/change_status" method="post" enctype="multipart/form-data"
           id="updateForm" class="container border rounded p-4">
             <input type="hidden" name="file_id" id="fileId"
@@ -83,7 +88,7 @@
             </select>
         <button type="submit" id="changeStatus" class="btn btn-success" style="margin-top: 30px; margin-left: 20px">Change status</button>
     </form>
-
+    {% endif %}
     <script src="/static/js/utils/manageTagList.js"></script>
 </body>
 </html>

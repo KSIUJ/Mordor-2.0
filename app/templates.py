@@ -6,10 +6,30 @@ def is_authenticated(user: Any) -> bool:
         try:
             if not user:
                 return False
-            return (getattr(user, 'role', 'PUBLIC') != 'PUBLIC')
+            return getattr(user, 'role', 'PUBLIC') != 'PUBLIC'
         except Exception as e:
             logging.warning(f"Error checking authentication: {str(e)}")
             return False
+
+
+def is_admin(user: Any) -> bool:
+    try:
+        if not user:
+            return False
+        return getattr(user, 'role', 'PUBLIC') == 'ADMIN'
+    except Exception as e:
+        logging.warning(f"Error checking authentication: {str(e)}")
+        return False
+
+
+def is_user(user: Any) -> bool:
+    try:
+        if not user:
+            return False
+        return getattr(user, 'role', 'PUBLIC') == 'USER'
+    except Exception as e:
+        logging.warning(f"Error checking authentication: {str(e)}")
+        return False
 
 
 def patch_templates():
@@ -20,11 +40,14 @@ def patch_templates():
                context = context.copy() if context else {}
                request = context.get('request')
                if request:
+                   user=getattr(request.state, 'user', None)
                    print(getattr(request.state, 'user', None))
                    context.setdefault('current_user', getattr(request.state, 'user', None))
-                   context.setdefault('is_authenticated', is_authenticated(getattr(request.state, 'user', None)))
-                   
-               
+                   context.setdefault('is_authenticated', is_authenticated(user))
+                   context.setdefault('is_admin', is_admin(user))
+                   context.setdefault('is_user', is_user(user))
+
+
                return original(self, name, context, **kwargs)
            except Exception as e:
                logging.error(f"Error while patching a template: {str(e)}")

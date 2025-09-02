@@ -35,8 +35,13 @@
 </head>
 <body>
     {% include "navbar.html" %}
+    {% if is_admin %}
+    <form action="/admin/upload" method="post" enctype="multipart/form-data"
+      class="container border rounded p-4" id="uploadForm">
+    {% elif is_user %}
     <form action="/user/upload" method="post" enctype="multipart/form-data"
       class="container border rounded p-4" id="uploadForm">
+    {% endif %}
         <h1>Add entry</h1>
 
         <div class="form-floating">
