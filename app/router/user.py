@@ -13,7 +13,18 @@ templates = Jinja2Templates(directory="templates")
 router = APIRouter(prefix="", tags=["user"])
 
 
-
+def format_file_size(size_bytes: int) -> str:
+    """Convert bytes to be in a readable format"""
+    if size_bytes == 0:
+        return "0 B"
+    
+    size_names = ["B", "KB", "MB", "GB", "TB"]
+    i = 0
+    while size_bytes >= 1024 and i < len(size_names) - 1:
+        size_bytes /= 1024.0
+        i += 1
+    
+    return f"{size_bytes:.1f} {size_names[i]}"
 
 @router.get("/profile")
 async def profile(request: Request):
@@ -30,5 +41,6 @@ async def profile(request: Request):
         "email" : user.email,
         "size_limit" : user.size_limit,
         "number_limit" : user.number_limit,
-        "files" : files
+        "files" : files,
+        "format_file_size": format_file_size
         })
