@@ -104,17 +104,17 @@ async def api_files(request: Request, q: str = Query("", max_length=250)):
         List of files matching tag expression
     """
     try:
+        file_service = FileService()
         
         q = q.strip()
         if not q:
             try:
-                file_service = FileService()
                 return await file_service.get_accepted_files(request)
             except PermissionError:
                 return []
         
         ast = parseExpression(q)
-        results = await db.get_files_by_tags(ast)
+        results = await file_service.get_files_by_tags(ast)
         
         return results
     except SyntaxError as e:
