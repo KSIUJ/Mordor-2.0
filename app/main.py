@@ -11,10 +11,7 @@ from db import db
 import logging
 import asyncio
 from services.authservice import AuthMiddleware, Role
-from services.fileService import FileService
-from parser.parser import parseExpression
 from templates import patch_templates
-from model.fileModel import FileStatus
 
 app = FastAPI()
 
@@ -38,7 +35,7 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health", "/api/files"],
+    Role.USER: ["/test/auth/user", "/health", "/user/files"],
     Role.MANAGER: ["/test/auth/manager"],
     Role.ADMIN: ["/test/auth/admin"],
 }
@@ -87,36 +84,3 @@ async def root():
 @app.get("/placeholder_search")
 async def placeholder():
     return FileResponse("static/placeholder_search.html")
-
-@app.get("/api/files")
-async def get_accepted_files_by_tags(q: str = Query("", max_length=250),
-                                     status: List[FileStatus] = Query([FileStatus.ACCEPTED])):
-    """
-    Endpoint for searching files by tag expressions
-    
-    Args:
-        q : Query string with logical tag expression
-        status : list of selected file statuses
-
-    Raises:
-        400 BAD_REQUEST: Syntax errors in query expression
-        500 INTERNAL_SERVER_ERROR: Unexpected server erorrs
-
-    Returns:
-        List of files matching tag expression
-    """
-    try:
-        file_service = FileService()
-        
-        q = q.strip()
-        ast = parseExpression(q)
-        results = await file_service.get_files_by_tags(ast, status)
-        
-        return results
-    except SyntaxError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid syntax: {str(e)}")
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        logging.exception(f"Server error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")

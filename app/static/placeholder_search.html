@@ -18,7 +18,7 @@
                 // if URL contains a query searches for matching files
                 if(params.has('q')){
                     input.value = params.get('q')
-                    const url = new URL('/api/files', location.origin);
+                    const url = new URL('/user/files', location.origin);
                     url.search = params.toString();
 
                     try{
@@ -50,7 +50,7 @@
                 const form = e.target;
                 const params = new URLSearchParams(new FormData(form));
 
-                const url = new URL('/api/files', location.origin);
+                const url = new URL('/user/files', location.origin);
                 url.search = params.toString();
 
                 try {
