@@ -82,7 +82,7 @@ document.getElementById('selectedTags').addEventListener('click', function (e) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadTagsFromDB()
+    // loadTagsFromDB()
     const addButton = document.getElementById('addTagBtn')
     const input = document.getElementById('tags')
     addButton.addEventListener('click', function(){

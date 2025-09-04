@@ -13,12 +13,12 @@ service = FileService()
 
 
 
-@router.get("/get_all_files")
+@router.get("/all_files")
 @handle_file_service_errors
 async def get_all_files():
     return await service.get_all_files()
 
-@router.post("/upload")
+@router.post("/file")
 @handle_file_service_errors
 async def upload(
     request: Request,
@@ -45,13 +45,14 @@ async def change_status(
     await service.change_status(req)
     return RedirectResponse(url="/update",status_code=303)
 
-@router.post("/update_file")
+@router.post("/file/{file_id}")
 @handle_file_service_errors
 async def update_file(
+    file_id: int,
     file: UploadFile = File(...),
     tags: str = Form(None),
-    file_id: int = Form(...),
-    name: str = Form(...)
+    name: str = Form(...),
+
 ):
     if tags is None:
         tags=[]
@@ -67,7 +68,7 @@ async def change_tags(
 ):
     return await service.change_tags(changeReq.file_id,changeReq.tags)
 
-@router.delete("/delete_file/{file_id}")
+@router.delete("/file/{file_id}")
 @handle_file_service_errors
 async def delete_file(
     file_id: int

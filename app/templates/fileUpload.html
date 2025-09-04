@@ -36,10 +36,10 @@
 <body>
     {% include "navbar.html" %}
     {% if is_admin %}
-    <form action="/admin/upload" method="post" enctype="multipart/form-data"
+    <form action="/admin/file" method="post" enctype="multipart/form-data"
       class="container border rounded p-4" id="uploadForm">
     {% elif is_user %}
-    <form action="/user/upload" method="post" enctype="multipart/form-data"
+    <form action="/user/file" method="post" enctype="multipart/form-data"
       class="container border rounded p-4" id="uploadForm">
     {% endif %}
         <h1>Add entry</h1>
@@ -54,7 +54,11 @@
         <label class="form-label" for="tags" style="font-size: 25px">Tags:</label>
         <div class="d-flex align-items-center mb-3">
             <input class="form-control w-25" list="tagOptions" id="tags" placeholder="Type to search...">
-            <datalist id="tagOptions"></datalist>
+            <datalist id="tagOptions">
+                {% for tag in tags %}
+                    <option value="{{tag.name}}" data-id="{{ tag.id }}"></option>
+                {% endfor %}
+            </datalist>
             <button type="button" class="btn btn-primary ms-2" id="addTagBtn">Add</button>
         </div>
 

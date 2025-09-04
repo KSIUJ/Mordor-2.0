@@ -38,15 +38,13 @@
 <body>
     {% include "navbar.html" %}
     {% if is_admin %}
-    <form action="/admin/update_file" method="post" enctype="multipart/form-data"
+    {#   TODO: set /1 to selected file     #}
+    <form action="/admin/file/1" method="post" enctype="multipart/form-data"
           id="updateForm" class="container border rounded p-4">
     {% elif is_user %}
-    <form action="/user/update_file" method="post" enctype="multipart/form-data"
+    <form action="/user/file/1" method="post" enctype="multipart/form-data"
           id="updateForm" class="container border rounded p-4">
     {% endif %}
-        {# TODO: remove dummy values below    #}
-        <input type="hidden" name="file_id" id="fileId"
-            value="51">
         <h1>Modify entry</h1>
         <div class="form-floating">
             <input class="form-control w-50" type="text" id="fileName" name="name" placeholder="File name:">
@@ -55,13 +53,14 @@
         <label class="form-label" for="uploadedFile">Uploaded file:</label>
         <input class="form-control w-50" type="file" id="uploadedFile" name="file">
 
-
-
         <label class="form-label" for="tags" style="font-size: 25px;">Tags:</label>
         <div class="d-flex align-items-center mb-3">
             <input class="form-control w-25" list="tagOptions"
                    id="tags" placeholder="Type to search...">
             <datalist id="tagOptions">
+                {% for tag in tags %}
+                    <option value="{{tag.name}}" data-id="{{ tag.id }}"></option>
+                {% endfor %}
             </datalist>
             <button type="button" class="btn btn-primary ms-2" id="addTagBtn">Add</button>
         </div>
