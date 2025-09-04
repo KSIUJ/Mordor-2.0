@@ -60,7 +60,7 @@ async def get_accepted_files_by_tags(q: str = Query("", max_length=250),
         400 BAD_REQUEST: Syntax errors in query expression
 
     Returns:
-        List of files matching tag expression
+        List of files matching tag expression and status
     """
     try:
         
