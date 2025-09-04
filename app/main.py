@@ -9,6 +9,7 @@ from router.admin.fileManagement import router as admin_file_router
 from router.user.fileManagement import router as user_file_router
 from router.user.tagRouter import router as tag_router
 from router.upload import router as upload_router
+from router.update import router as update_router
 from db import db
 import logging
 import asyncio
@@ -53,6 +54,7 @@ app.include_router(admin_file_router)
 app.include_router(user_file_router)
 app.include_router(tag_router)
 app.include_router(upload_router)
+app.include_router(update_router)
 @app.on_event("startup")
 async def startup_event():
     """Initialize database connection on startup with retry logic"""
