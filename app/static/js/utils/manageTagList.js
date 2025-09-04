@@ -1,17 +1,3 @@
-//load available tags from db to tag list
-async function loadTagsFromDB(){
-    try {
-        const response = await fetch('user/get_tags')
-        const tags = await response.json()
-
-        const datalist = document.getElementById('tagOptions')
-        datalist.innerHTML = tags.map(tag =>
-        `<option value="${tag.name}" data-id="${tag.id}"></option>`
-    ).join('')
-    }catch (e){
-        console.error(e)
-    }
-}
 // get id from name
 function getTagId(tagName) {
     const options = document.getElementById('tagOptions').options
@@ -82,7 +68,6 @@ document.getElementById('selectedTags').addEventListener('click', function (e) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    // loadTagsFromDB()
     const addButton = document.getElementById('addTagBtn')
     const input = document.getElementById('tags')
     addButton.addEventListener('click', function(){
