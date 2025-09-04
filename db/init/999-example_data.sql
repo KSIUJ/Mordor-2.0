@@ -36,7 +36,7 @@ INSERT INTO users VALUES
 
 
 INSERT INTO files VALUES
-(1, 'whaadssadsdasadasddasdsadasasdasdasdasdasddsafasdasddfasdasdsaasdasddasasdt.mp3', '/uploads/what.mp3', 'rejected', 7615039, '2025-06-09 16:39:40', 10),
+(10000, 'whaadssadsdasadasddasdsadasasdasdasdasdasddsafasdasddfasdasdsaasdasddasasdt.mp3', '/uploads/what.mp3', 'rejected', 7615039, '2025-06-09 16:39:40', 10),
 (2, 'fine.bmp', '/uploads/fine.bmp', 'accepted', 6849018, '2025-06-29 12:00:51', 10),
 (3, 'pull.flac', '/uploads/pull.flac', 'rejected', 1528738, '2025-06-25 06:49:21', 6),
 (4, 'history.png', '/uploads/history.png', 'rejected', 8234067, '2025-01-24 09:23:53', 10),

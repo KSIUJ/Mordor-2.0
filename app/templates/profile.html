@@ -21,10 +21,11 @@
     background-color: #eae4d5;
   }
   .scrollable-cell {
-    max-width: 20vh;
     overflow-x: auto;
-    white-space: nowrap;
-    display: block;
+    max-width: 20vh;
+  }
+  .small-cell {
+    max-width: 5vh;
   }
 </style>
 {% endblock %} {% block content %}
@@ -48,7 +49,7 @@
       <table class="table table-bordered mt-3" id="filesTable">
         <thead>
           <tr>
-            <th>File ID</th>
+            <th>ID</th>
             <th>File name</th>
             <th>Status</th>
             <th>Size</th>
@@ -59,7 +60,7 @@
           {% for file in files %}
           <tr>
             <td>{{ file.id }}</td>
-            <td class="scrollable-cell">{{ file.name }}</td>
+            <td>{{ file.name }}</td>
             {%if file.status == "accepted"%}
             <td style="color: #00d138">{{ file.status }}</td>
             {%elif file.status == "pending"%}
@@ -95,6 +96,17 @@
         paging: true,
         autoWidth: false,
         scrollX: true,
+        columns: [
+          {
+            className: "small-cell",
+          },
+          {
+            className: "scrollable-cell",
+          },
+          null,
+          null,
+          null,
+        ],
         columnControl: [
           "order",
           ["search", "spacer", "orderAsc", "orderDesc", "orderClear"],
