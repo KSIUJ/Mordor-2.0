@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 from typing import Optional
 import logging
-from parser.astToSQL import parseAST
 
 class DatabaseConnection:
     def __init__(self):
@@ -36,7 +35,7 @@ class DatabaseConnection:
         if not self.db_path:
             raise RuntimeError("Database not initialized. Call connect() first.")
         return aiosqlite.connect(self.db_path)
-    
+
     async def _is_initialized(self, db: aiosqlite.Connection) -> bool:
         """Check if database is already initialized"""
         try:

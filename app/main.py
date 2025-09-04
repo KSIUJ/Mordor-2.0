@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, HTTPException, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -14,7 +14,6 @@ from services.authservice import AuthMiddleware, Role
 from templates import patch_templates
 
 app = FastAPI()
-
 
 # Configure Jinja2 templates
 templates = Jinja2Templates(directory="templates")
