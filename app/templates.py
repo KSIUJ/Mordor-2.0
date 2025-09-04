@@ -20,7 +20,6 @@ def patch_templates():
                context = context.copy() if context else {}
                request = context.get('request')
                if request:
-                   print(getattr(request.state, 'user', None))
                    context.setdefault('current_user', getattr(request.state, 'user', None))
                    context.setdefault('is_authenticated', is_authenticated(getattr(request.state, 'user', None)))
                    
