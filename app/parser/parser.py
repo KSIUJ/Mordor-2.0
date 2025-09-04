@@ -1,5 +1,5 @@
 from .tokenizer import tokenize
-from .astNodes import OrNode, AndNode, NotNode, TagNode
+from .astNodes import OrNode, AndNode, NotNode, TagNode, EmptyNode
 
 class Parser:
     """Recursive tag parser"""
@@ -63,13 +63,13 @@ class Parser:
         return TagNode(tag)
 
 
-def parseExpression(expression: str) -> OrNode | AndNode | NotNode | TagNode:
+def parseExpression(expression: str) -> OrNode | AndNode | NotNode | TagNode | EmptyNode:
     """
         Utility function that parses a string expression into an abstract syntax tree (AST)
     """
     tokens = tokenize(expression)
     if not tokens:
-        return 
+        return EmptyNode()
     
     parser = Parser(tokens)
     ast = parser.parseOrExpr()

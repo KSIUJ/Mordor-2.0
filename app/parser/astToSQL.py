@@ -1,5 +1,4 @@
-from .astNodes import AndNode, OrNode, NotNode, TagNode
-from .parser import parseExpression
+from .astNodes import AndNode, OrNode, NotNode, TagNode, EmptyNode
 
 class AST_to_SQL():
     """Recursive AST parser"""
@@ -34,6 +33,9 @@ class AST_to_SQL():
                 f"WHERE tf.file_id = files.id AND t.name = :p{self.counter}"
                 "))"
             )
+        
+        elif isinstance(node, EmptyNode):
+            return "1=1"
         
         raise ValueError("Unknown AST node type")
 
