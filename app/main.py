@@ -14,6 +14,7 @@ from services.authservice import AuthMiddleware, Role
 from services.fileService import FileService
 from parser.parser import parseExpression
 from templates import patch_templates
+from model.fileModel import FileStatus
 
 app = FastAPI()
 
@@ -88,13 +89,14 @@ async def placeholder():
     return FileResponse("static/placeholder_search.html")
 
 @app.get("/api/files")
-async def api_files(request: Request, q: str = Query("", max_length=250)):
+async def get_accepted_files_by_tags(q: str = Query("", max_length=250),
+                                     status: List[FileStatus] = Query([FileStatus.ACCEPTED])):
     """
     Endpoint for searching files by tag expressions
     
     Args:
-        request : FastAPI request object used for authorization
         q : Query string with logical tag expression
+        status : list of selected file statuses
 
     Raises:
         400 BAD_REQUEST: Syntax errors in query expression
@@ -107,14 +109,8 @@ async def api_files(request: Request, q: str = Query("", max_length=250)):
         file_service = FileService()
         
         q = q.strip()
-        if not q:
-            try:
-                return await file_service.get_accepted_files(request)
-            except PermissionError:
-                return []
-        
         ast = parseExpression(q)
-        results = await file_service.get_files_by_tags(ast)
+        results = await file_service.get_files_by_tags(ast, status)
         
         return results
     except SyntaxError as e:

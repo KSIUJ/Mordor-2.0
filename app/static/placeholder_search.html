@@ -16,7 +16,7 @@
                 const input = document.querySelector('[name="q"]')
                 
                 // if URL contains a query searches for matching files
-                if(params.get('q')){
+                if(params.has('q')){
                     input.value = params.get('q')
                     const url = new URL('/api/files', location.origin);
                     url.search = params.toString();

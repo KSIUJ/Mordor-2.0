@@ -93,16 +93,22 @@ class FileRepository:
                 except Exception as e:
                     raise DatabaseError()
                 
-    async def get_files_by_tags(self, ast: str):
-        """Returns files matching given tags"""
+    async def get_files_by_tags(self, ast, status: List[FileStatus]):
+        """Returns files matching given tags and status"""
         sql, params = parseAST(ast)
+        status_sql = "(" + ",".join(f"'{st.value}'" for st in status) + ")"
         
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 try:
-                    await cursor.execute(sql, params)
+                    await cursor.execute(f"""
+                                         SELECT id, name, size, uploaded_by, status, filepath
+                                         FROM files
+                                         WHERE status IN {status_sql} and {sql}
+                                         """, params)
                     rows = await cursor.fetchall()
-                    return rows
+                    files = process_files(rows)
+                    return files
                 except Exception as e:
                     raise DatabaseError()
         

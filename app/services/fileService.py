@@ -78,8 +78,8 @@ class FileService:
         user_auth(request)
         return await self.repo.get_accepted_files()
     
-    async def get_files_by_tags(self, ast):
-        return await self.repo.get_files_by_tags(ast)
+    async def get_files_by_tags(self, ast, status: List[FileStatus]):
+        return await self.repo.get_files_by_tags(ast, status)
 
     async def upload_file(self, request: Request, file: UploadFile,
                           tags: list[int], userId: int, name: str):

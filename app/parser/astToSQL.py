@@ -44,16 +44,15 @@ class AST_to_SQL():
         self.params = {}
         self.counter = 0
         sql_where = self._AST_to_SQL(ast)
-        sql = f"SELECT * FROM files WHERE status = 'accepted' AND {sql_where}"
         
-        return sql
+        return sql_where
 
 
 def parseAST(ast: str) -> tuple[str, dict]:
     """
-        Utility function that parses an AST into sql query
+        Utility function that parses an AST into SQL WHERE fragment and parameters
     """
     parser = AST_to_SQL()
-    sql = parser.run(ast)
+    sql_where = parser.run(ast)
     
-    return sql, parser.params
+    return sql_where, parser.params
