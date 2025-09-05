@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 class FileStatus(str,Enum):
     PENDING = "pending"
@@ -16,7 +16,7 @@ class FileInfo(BaseModel):
     uploaded_by: int
     filepath: str
     status: FileStatus
-    uploaded_at: datetime
+    uploaded_at: Optional[datetime] = None
 
 class AddFileRequest(BaseModel):
     """To add a file we need its model & selected tags"""
