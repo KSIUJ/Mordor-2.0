@@ -1,6 +1,7 @@
 import json
 
 from fastapi import APIRouter, UploadFile, File, Form, Request, Query, HTTPException
+from fastapi.responses import FileResponse
 
 from services.fileService import FileService
 from utils.errorWrapper import handle_file_service_errors
@@ -44,6 +45,10 @@ async def update_file(
 async def get_files(request: Request):
     result = await service.get_accepted_files(request)
     return result
+
+@router.get("/placeholder_search")
+async def placeholder():
+    return FileResponse("static/placeholder_search.html")
 
 @router.get("/files")
 @handle_file_service_errors

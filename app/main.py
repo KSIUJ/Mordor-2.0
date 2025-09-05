@@ -82,7 +82,3 @@ async def shutdown_event():
 @app.get("/")
 async def root():
     return {"message": "Hello, World4!"}
-
-@app.get("/placeholder_search")
-async def placeholder():
-    return FileResponse("static/placeholder_search.html")
