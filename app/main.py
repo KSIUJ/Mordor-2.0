@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from router.admin.fileManagement import router as admin_file_router
@@ -34,7 +35,7 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health", "/profile"],
+    Role.USER: ["/test/auth/user", "/health", "/profile", "/user/files"],
     Role.MANAGER: ["/test/auth/manager"],
     Role.ADMIN: ["/test/auth/admin"],
 }

@@ -7,6 +7,7 @@ from db import db
 from model.exceptions import DatabaseError
 from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRequest, UpdateFileRequest
 from model.user import *
+from parser.astToSQL import parseAST
 
 def process_files(rows):
     """Helper method to avoid redundant code"""
@@ -91,6 +92,27 @@ class FileRepository:
                     return files
                 except Exception as e:
                     raise DatabaseError()
+                
+    async def get_files_by_tags(self, ast, status: List[FileStatus]):
+        """Returns files matching given tags and status"""
+        sql, params = parseAST(ast)
+        status_sql = "(" + ",".join(f"'{st.value}'" for st in status) + ")"
+        
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute(f"""
+                                         SELECT id, name, size, uploaded_by, status, filepath
+                                         FROM files
+                                         WHERE status IN {status_sql} and {sql}
+                                         """, params)
+                    rows = await cursor.fetchall()
+                    files = process_files(rows)
+                    return files
+                except Exception as e:
+                    raise DatabaseError()
+        
+            
                     
     async def get_user_uploaded_files(self, user: UserWithLimits):
             """Returns basic info about accepted files to common user"""
