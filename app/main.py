@@ -1,4 +1,4 @@
-from fastapi import FastAPI 
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -79,6 +79,37 @@ async def shutdown_event():
     # !!!!!!!!!!!!!👎👎👎👎 USE FOR TESTING
     await db.delete()
 
+
+from repository.user_repository import user_repo
+from repository.fileRepository import file_repo
+from model.user import UserWithLimits
+from model.fileModel import FileInfo, FileStatus
+from typing import List
+import logging
+
+def format_file_size(size_bytes: int) -> str:
+    """Convert bytes to be in a readable format"""
+    if size_bytes == 0:
+        return "0 B"
+    
+    size_names = ["B", "KB", "MB", "GB", "TB"]
+    i = 0
+    while size_bytes >= 1024 and i < len(size_names) - 1:
+        size_bytes /= 1024.0
+        i += 1
+    
+    return f"{size_bytes:.1f} {size_names[i]}"
+
 @app.get("/")
-async def root():
-    return {"message": "Hello, World4!"}
+async def profile(request: Request):
+    """
+    Profile route
+    """
+    files : List[FileInfo] = await file_repo.get_accepted_files()
+    for i, value in enumerate(files):
+        files[i].status = files[i].status.value
+    return templates.TemplateResponse("main.html", {
+        "request": request,
+        "files" : files,
+        "format_file_size": format_file_size
+        })

@@ -1,0 +1,90 @@
+{% extends "base.html" %} {% block title %}Mordor2{% endblock %} {% block head%}
+
+<style>
+  body {
+    background-color: #eae4d5;
+    color: #111111;
+  }
+  .container {
+    background-color: #f2f2f2;
+    transform-origin: top left;
+    min-height: 100vh;
+  }
+  .text-secondary {
+    color: #b6b09f;
+  }
+  .table th,
+  .table td {
+    vertical-align: middle;
+  }
+  .table thead {
+    background-color: #eae4d5;
+  }
+  .scrollable-cell {
+    overflow-x: auto;
+    max-width: 20vh;
+  }
+  .small-cell {
+    max-width: 5vh;
+  }
+  .search-container {
+    text-align: center;
+  }
+</style>
+{% endblock %} {% block content %}
+
+<div class="container border rounded p-4">
+  <div class="search-container">
+    <input
+      type="text"
+      class="search-box"
+      placeholder="Search files..."
+      aria-label="Search files"
+    />
+  </div>
+  <div class="container">
+    <h3>Uploaded files</h3>
+    <table class="table table-bordered mt-3" id="filesTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>File name</th>
+          <th>Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for file in files %}
+        <tr>
+          <td>{{ file.id }}</td>
+          <td>{{ file.name }}</td>
+          <td data-sort="{{ file.size }}">{{ format_file_size(file.size) }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center">No files uploaded</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    $(document).ready(function () {
+      var table = new DataTable("#filesTable", {
+        searching: false,
+        paging: true,
+        columns: [
+          {
+            className: "small-cell",
+          },
+          {
+            className: "scrollable-cell",
+          },
+          null,
+        ],
+      });
+    });
+  });
+</script>
+{% endblock %}

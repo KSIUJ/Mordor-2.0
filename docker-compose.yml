@@ -17,23 +17,3 @@ services:
       #set correct upload directory
       UPLOAD_DIR: /db/data/uploads
       DATABASE_URL: sqlite:///db/data/database.db
-      CHROMA_SERVER: http://chromadb:8000
-    depends_on:
-      - chromadb
-    networks:
-      - app_network
-
-  chromadb:
-    image: chromadb/chroma:latest
-    container_name: chromadb
-    hostname: chromadb
-    restart: always
-    ports:
-      - "8000:8000"
-    environment:
-      - IS_PERSISTENT=TRUE
-      - PERSIST_DIRECTORY=/chroma/chroma
-    volumes:
-      - ./Embeddings/chroma_data:/chroma
-    networks:
-      - app_network
