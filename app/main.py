@@ -3,11 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi import Request
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from router.admin.fileManagement import router as admin_file_router
 from router.user.fileManagement import router as user_file_router
 from router.User import router as user_router
+from router.user.tagRouter import router as tag_router
+from router.upload import router as upload_router
+from router.update import router as update_router
 from db import db
 import logging
 import asyncio
@@ -35,9 +39,9 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health", "/profile", "/user/files"],
+    Role.USER: ["/test/auth/user", "/health","/user/upload","/user/update_file", "/user/get_files","/user/get_tags","/update/","/upload/"],
     Role.MANAGER: ["/test/auth/manager"],
-    Role.ADMIN: ["/test/auth/admin"],
+    Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/update_file", "/admin/get_all_files","/admin/change_status"],
 }
 #Add Role Middleware
 app.add_middleware(AuthMiddleware, config = {
@@ -52,6 +56,9 @@ app.include_router(admin_file_router)
 app.include_router(user_file_router)
 app.include_router(user_router)
 
+app.include_router(tag_router)
+app.include_router(upload_router)
+app.include_router(update_router)
 @app.on_event("startup")
 async def startup_event():
     """Initialize database connection on startup with retry logic"""
@@ -101,6 +108,10 @@ def format_file_size(size_bytes: int) -> str:
     return f"{size_bytes:.1f} {size_names[i]}"
 
 @app.get("/")
+async def root():
+    return {"message": "Hello, World4!"}
+# Endpoints to check upload and update pages
+# TODO: ??? Remove later ???
 async def profile(request: Request):
     """
     Profile route

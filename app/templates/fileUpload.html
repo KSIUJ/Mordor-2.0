@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Upload pliku{% endblock %}
+
+{% block content %}
+    {% if is_admin %}
+    <form action="/admin/file" method="post" enctype="multipart/form-data"
+      class="container border rounded p-4" id="uploadForm">
+    {% elif is_user %}
+    <form action="/user/file" method="post" enctype="multipart/form-data"
+      class="container border rounded p-4" id="uploadForm">
+    {% endif %}
+        <h1>Add entry</h1>
+
+        <div class="form-floating">
+            <input class="form-control w-50" type="text" id="fileName" name="name" placeholder="File name:">
+            <label for="fileName">File name:</label>
+        </div>
+        <label class="form-label" for="uploadedFile">Uploaded file:</label>
+        <input class="form-control w-50" type="file" id="uploadedFile" name="file">
+
+        <label class="form-label" for="tags" style="font-size: 25px">Tags:</label>
+        <div class="d-flex align-items-center mb-3">
+            <input class="form-control w-25" list="tagOptions" id="tags" placeholder="Type to search...">
+            <datalist id="tagOptions">
+                {% for tag in tags %}
+                    <option value="{{tag.name}}" data-id="{{ tag.id }}"></option>
+                {% endfor %}
+            </datalist>
+            <button type="button" class="btn btn-primary ms-2" id="addTagBtn">Add</button>
+        </div>
+
+        <ul id="selectedTags" class="list-inline tag-list"></ul>
+        <input type="hidden" name="tags" id="tagsInput">
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+    <script src="/static/js/utils/manageTagList.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

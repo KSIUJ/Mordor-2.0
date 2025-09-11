@@ -1,7 +1,8 @@
 import json
 
-from fastapi import APIRouter, UploadFile, File, Form, Request, Query, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form,Request, Query, HTTPException, Body
 from fastapi.responses import FileResponse
+from starlette.responses import RedirectResponse
 
 from services.fileService import FileService
 from utils.errorWrapper import handle_file_service_errors
@@ -13,7 +14,7 @@ from typing import List
 router = APIRouter(prefix="/user", tags=["user", "file"])
 service = FileService()
 
-@router.put("/upload")
+@router.post("/file")
 @handle_file_service_errors
 async def upload(
         request: Request,
@@ -25,25 +26,26 @@ async def upload(
     userId = 1
     #TODO: Enable getting id of logged user
     tags = json.loads(tags)
-    return await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
+    await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
+    return RedirectResponse(url="/upload?success=file send successfully", status_code=303)
 
-
-@router.post("/update_file")
+@router.post("/file/{file_id}")
 @handle_file_service_errors
 async def update_file(
-    request: Request,
+    file_id: int,
     file: UploadFile = File(...),
-    tags: str = Form(...),
-    id: int = Form(...),
-    name: str = Form(...)
+    tags: str = Form(None),
+    name: str = Form(...),
+
 ):
     tags = json.loads(tags)
-    return await service.update_file(request, file, tags,id, name)
+    await service.update_file(file, tags,file_id, name)
+    return RedirectResponse(url="/update",status_code=303)
 
-@router.get("/get_files")
+@router.get("/files")
 @handle_file_service_errors
-async def get_files(request: Request):
-    result = await service.get_accepted_files(request)
+async def get_files():
+    result = await service.get_accepted_files()
     return result
 
 @router.get("/placeholder_search")
