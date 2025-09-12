@@ -34,7 +34,7 @@ def _delete_file_if_exists(filepath: str):
     #TODO: LOOK FOR DELETION ALTERNATIVE
     path = Path(filepath)
     if path.exists() and path.is_file():
-        path.unlink()
+        os.remove(filepath)
 
 # ==================== FILE SERVICE CLASS ====================
 class FileService:
@@ -57,6 +57,8 @@ class FileService:
         return await self.repo.update_tags(fileId, tags)
 
     async def delete_file(self,  fileId: int):
+        file = await self.repo.get_file_by_id(fileId)
+        _delete_file_if_exists(file.filepath)
         return await self.repo.delete_file(fileId)
 
     # ==================== USER OPERATIONS ====================
@@ -94,7 +96,7 @@ class FileService:
         #     raise HTTPException(status_code=403, detail=f"File {fileId} is not pending.")
         if file:
 
-            # Delete old file
+            # Change old file
             filePath = Path(existing_file.filepath)
 
             if filePath.exists():
