@@ -68,7 +68,7 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status, filepath
+                                         SELECT id, name, size, uploaded_by, status, filepath,uploaded_at
                                          FROM files
                                          WHERE status = 'accepted'
                                          """)
@@ -85,7 +85,7 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status,filepath
+                                         SELECT id, name, size, uploaded_by, status,filepath,uploaded_at
                                          FROM files
                                          """)
                     rows = await cursor.fetchall()
