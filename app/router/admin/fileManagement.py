@@ -33,7 +33,7 @@ async def upload(
     else:
         tags = json.loads(tags)
     await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
-    return RedirectResponse(url="/update",status_code=303)
+    return RedirectResponse(url="/upload",status_code=303)
 @router.post("/change_status")
 @handle_file_service_errors
 async def change_status(
