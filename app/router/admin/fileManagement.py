@@ -43,7 +43,7 @@ async def change_status(
 ):
     req=ChangeStatusRequest(file_id=file_id, status=status,version=version)
     await service.change_status(req)
-    return RedirectResponse(url="/update",status_code=303)
+    return RedirectResponse(url=f"/update/{file_id}",status_code=303)
 
 @router.post("/file/{file_id}")
 @handle_file_service_errors
@@ -58,8 +58,8 @@ async def update_file(
         tags=[]
     else:
         tags = json.loads(tags)
-    await service.update_file(file=file, tags=tags, fileId=file_id, name=name)
-    return RedirectResponse(url="/update",status_code=303)
+    return await service.update_file(file=file, tags=tags, fileId=file_id, name=name)
+    return RedirectResponse(url=f"/update/{file_id}",status_code=303)
 
 @router.post("/change_tags")
 @handle_file_service_errors

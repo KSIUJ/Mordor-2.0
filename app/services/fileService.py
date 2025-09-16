@@ -91,7 +91,7 @@ class FileService:
                           tags: list[int], fileId: int, name: str):
 
         existing_file = await self.repo.get_file_by_id(fileId)
-
+        
         # if existing_file.status != FileStatus.PENDING:
         #     raise HTTPException(status_code=403, detail=f"File {fileId} is not pending.")
         if file:
@@ -105,6 +105,7 @@ class FileService:
                     content = await file.read()
                     f.write(content)
                     size=len(content)
+        else: size=existing_file.size
         updateFileRequest = UpdateFileRequest(
             id=fileId,
             filename=name,

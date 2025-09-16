@@ -4,10 +4,10 @@
 
 {% block content %}
     {% if is_admin %}
-    <form action="/admin/file/{{ file.fileId }}" method="post" enctype="multipart/form-data"
+    <form action="/admin/file/{{ file.id }}" method="post" enctype="multipart/form-data"
           id="updateForm" class="container border rounded p-4">
     {% elif is_user %}
-    <form action="/user/file/{{ file.fileId }}" method="post" enctype="multipart/form-data"
+    <form action="/user/file/{{ file.id }}" method="post" enctype="multipart/form-data"
           id="updateForm" class="container border rounded p-4">
     {% endif %}
         <h1>Modify entry</h1>
@@ -51,7 +51,7 @@
           id="updateForm" class="container border rounded p-4">
             <input type="hidden" name="file_id" id="fileId"
                 value="{{ file.id }}">
-            <input type="hidden" name="version" id="fileId"
+            <input type="hidden" name="version" id="fileVersion"
                 value="{{ file.version }}">
             <label class="form-label" for="fileStatus">File status:</label>
             <select name="status" class="form-select w-25" aria-label="Select status" id="status" style="margin-left: 10px">
