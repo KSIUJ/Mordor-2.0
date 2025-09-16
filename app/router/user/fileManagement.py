@@ -14,7 +14,7 @@ service = FileService()
 async def upload(
         request: Request,
         file: UploadFile = File(...),
-        tags: str = Form(...),
+        tags: str = Form(None),
         name: str = Form(...)
 ):
     # user = await auth_service.get_user_from_cookie()
@@ -28,7 +28,7 @@ async def upload(
 @handle_file_service_errors
 async def update_file(
     file_id: int,
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
     tags: str = Form(None),
     name: str = Form(...),
 

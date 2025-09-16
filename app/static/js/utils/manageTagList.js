@@ -10,9 +10,9 @@ function getTagId(tagName) {
 }
 //checks which tags are selected
 function updateHiddenTags() {
-    const selectedTags = document.querySelectorAll('#selectedTags li');
-    const tagIds = Array.from(selectedTags).map(li => li.getAttribute('data-tag-id'));
-    document.getElementById('tagsInput').value = JSON.stringify(tagIds); // np. "[1,2,3]"
+    const selectedTags = document.querySelectorAll('#selectedTags li')
+    const tagIds = Array.from(selectedTags).map(li => li.getAttribute('data-tag-id'))
+    document.getElementById('tagsInput').value = JSON.stringify(tagIds)
 }
 // adds selected tag after clicking button
 function addTag(tagName,tagId){

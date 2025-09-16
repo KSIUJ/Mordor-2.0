@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from typing import List
 
@@ -6,6 +7,7 @@ from fastapi import HTTPException
 from db import db
 from model.exceptions import DatabaseError
 from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRequest, UpdateFileRequest
+from model.tagModel import TagModel
 
 
 def process_files(rows):
@@ -76,6 +78,29 @@ class FileRepository:
                     files = process_files(rows)
                     conn.close()
                     return files
+                except Exception as e:
+                    raise DatabaseError()
+
+    async def get_files_tags(self,fileId: int):
+        """Returns basic info about accepted files to common user"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute("""
+                                         SELECT id,name
+                                         FROM tag_file JOIN tags ON tags.id = tag_file.tag_id
+                                         WHERE file_id = ?
+                                         """, (fileId,))
+                    tags=[]
+                    rows = await cursor.fetchall()
+                    # CREATES LIST OF TAGS
+                    for row in rows:
+                        tags.append(TagModel(
+                            id=row[0],
+                            name=row[1]
+                        ))
+                    conn.close()
+                    return tags
                 except Exception as e:
                     raise DatabaseError()
 
