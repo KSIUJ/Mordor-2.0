@@ -13,6 +13,7 @@ async def uploadPage(request: Request,
     file=await repo.get_file_by_id(file_id)
     filetags=await repo.get_files_tags(file_id)
     data=[tag for tag in data if tag not in filetags]
+    # TODO: ADD VALIDATION SO USERS CAN ONLY SEE MODIFIABLE FILES
     return templates.TemplateResponse("fileUpdate.html",
                                       {
                                           "request": request,
