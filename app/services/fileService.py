@@ -97,7 +97,7 @@ class FileService:
                 #change content
                 with open(filePath, "wb") as f:
                     content = await file.read()
-                    if not self.limits.sizeOverflow(existing_file.uploaded_by, len(content)):
+                    if not self.limits.sizeOverflow(existing_file.uploaded_by, len(content)-existing_file.size):
                         raise PermissionError
                     f.write(content)
                     size=len(content)
