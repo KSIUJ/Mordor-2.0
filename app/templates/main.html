@@ -5,6 +5,9 @@
     background-color: #eae4d5;
     color: #111111;
   }
+  .small-cell {
+    max-width: 5vh;
+  }
   .container {
     background-color: #f2f2f2;
     transform-origin: top left;
@@ -24,8 +27,18 @@
     overflow-x: auto;
     max-width: 20vh;
   }
-  .small-cell {
-    max-width: 5vh;
+  .container {
+    background-color: #f2f2f2;
+    transform-origin: top left;
+    min-height: 100vh;
+  }
+  .file-link {
+    color: #007bff;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .file-link:hover {
+    text-decoration: underline;
   }
   .search-container {
     text-align: center;
@@ -56,12 +69,17 @@
         {% for file in files %}
         <tr>
           <td>{{ file.id }}</td>
-          <td>{{ file.name }}</td>
+          <td>
+            <a
+              href="user/file/{{ file.id }}"
+              class="file-link"
+              target="_blank"
+              title="Download {{ file.name }}"
+            >
+              {{ file.name }}
+            </a>
+          </td>
           <td data-sort="{{ file.size }}">{{ format_file_size(file.size) }}</td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="5" class="text-center">No files uploaded</td>
         </tr>
         {% endfor %}
       </tbody>

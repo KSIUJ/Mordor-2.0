@@ -107,18 +107,15 @@ def format_file_size(size_bytes: int) -> str:
     
     return f"{size_bytes:.1f} {size_names[i]}"
 
+
+# async def root():
+#     return {"message": "Hello, World4!"}
 @app.get("/")
-async def root():
-    return {"message": "Hello, World4!"}
-# Endpoints to check upload and update pages
-# TODO: ??? Remove later ???
-async def profile(request: Request):
-    """
-    Profile route
-    """
+async def main(request: Request):
     files : List[FileInfo] = await file_repo.get_accepted_files()
     for i, value in enumerate(files):
         files[i].status = files[i].status.value
+        files[i].name = f"{files[i].name}.{files[i].filepath.split('.')[1]}"
     return templates.TemplateResponse("main.html", {
         "request": request,
         "files" : files,

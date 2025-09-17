@@ -9,6 +9,7 @@ db/data
 *.sqlite
 *.sqlite3
 
+app/uploads
 
 **/__pycache__
 **/*.py[cod]
