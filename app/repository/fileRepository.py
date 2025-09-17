@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from typing import List
 
@@ -8,6 +9,8 @@ from model.exceptions import DatabaseError
 from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRequest, UpdateFileRequest
 from model.user import *
 from parser.astToSQL import parseAST
+from model.tagModel import TagModel
+
 
 def process_files(rows):
     """Helper method to avoid redundant code"""
@@ -69,7 +72,7 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status, filepath
+                                         SELECT id, name, size, uploaded_by, status, filepath,uploaded_at
                                          FROM files
                                          WHERE status = 'accepted'
                                          """)
@@ -80,13 +83,36 @@ class FileRepository:
                 except Exception as e:
                     raise DatabaseError()
 
+    async def get_files_tags(self,fileId: int):
+        """Returns basic info about accepted files to common user"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute("""
+                                         SELECT id,name
+                                         FROM tag_file JOIN tags ON tags.id = tag_file.tag_id
+                                         WHERE file_id = ?
+                                         """, (fileId,))
+                    tags=[]
+                    rows = await cursor.fetchall()
+                    # CREATES LIST OF TAGS
+                    for row in rows:
+                        tags.append(TagModel(
+                            id=row[0],
+                            name=row[1]
+                        ))
+                    conn.close()
+                    return tags
+                except Exception as e:
+                    raise DatabaseError()
+
     async def get_all_files(self):
         """Returns basic info about accepted files to common user"""
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status,filepath
+                                         SELECT id, name, size, uploaded_by, status,filepath,uploaded_at
                                          FROM files
                                          """)
                     rows = await cursor.fetchall()

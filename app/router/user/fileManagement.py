@@ -19,7 +19,7 @@ service = FileService()
 async def upload(
         request: Request,
         file: UploadFile = File(...),
-        tags: str = Form(...),
+        tags: str = Form(None),
         name: str = Form(...)
 ):
     # user = await auth_service.get_user_from_cookie()
@@ -27,13 +27,13 @@ async def upload(
     #TODO: Enable getting id of logged user
     tags = json.loads(tags)
     await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
-    return RedirectResponse(url="/upload?success=file send successfully", status_code=303)
+    return RedirectResponse(url="/upload", status_code=303)
 
 @router.post("/file/{file_id}")
 @handle_file_service_errors
 async def update_file(
     file_id: int,
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
     tags: str = Form(None),
     name: str = Form(...),
 

@@ -23,7 +23,7 @@ async def get_all_files():
 async def upload(
     request: Request,
     file: UploadFile = File(...),
-    tags: str = Form(...),
+    tags: str = Form(None),
     name: str = Form(...)
 ):
     userId = 1
@@ -33,7 +33,7 @@ async def upload(
     else:
         tags = json.loads(tags)
     await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
-    return RedirectResponse(url="/update",status_code=303)
+    return RedirectResponse(url="/upload",status_code=303)
 @router.post("/change_status")
 @handle_file_service_errors
 async def change_status(
@@ -43,13 +43,13 @@ async def change_status(
 ):
     req=ChangeStatusRequest(file_id=file_id, status=status,version=version)
     await service.change_status(req)
-    return RedirectResponse(url="/update",status_code=303)
+    return RedirectResponse(url=f"/update/{file_id}",status_code=303)
 
 @router.post("/file/{file_id}")
 @handle_file_service_errors
 async def update_file(
     file_id: int,
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
     tags: str = Form(None),
     name: str = Form(...),
 
@@ -58,8 +58,8 @@ async def update_file(
         tags=[]
     else:
         tags = json.loads(tags)
-    await service.update_file(file=file, tags=tags, fileId=file_id, name=name)
-    return RedirectResponse(url="/update",status_code=303)
+    return await service.update_file(file=file, tags=tags, fileId=file_id, name=name)
+    return RedirectResponse(url=f"/update/{file_id}",status_code=303)
 
 @router.post("/change_tags")
 @handle_file_service_errors

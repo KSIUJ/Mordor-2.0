@@ -7,6 +7,7 @@ from typing import List
 from fastapi import UploadFile, Request, HTTPException
 from model.fileModel import AddFileRequest, FileStatus, ChangeStatusRequest, UpdateFileRequest
 from repository.fileRepository import FileRepository
+from repository.limitsRepository import LimitsRepository
 from services.authservice import User, Role
 
 #TODO: set correct path in docker-compose
@@ -14,18 +15,7 @@ UPLOAD_DIR=Path(os.getenv("UPLOAD_DIR", "uploads"))
 
 
 
-# ==================== FILE OPERATIONS ====================
-async def _save_file_to_disk(file: UploadFile) -> tuple[str, int]:
-    """Save uploaded file to disk and return (filepath, size)"""
-    ext = os.path.splitext(file.filename)[1]
-    hashed_name = secrets.token_hex(16) + ext
-    file_path = UPLOAD_DIR / hashed_name
 
-    with open(file_path, "wb") as f:
-        content = await file.read()
-        f.write(content)
-
-    return str(file_path), len(content)
 
 
 def _delete_file_if_exists(filepath: str):
@@ -34,12 +24,13 @@ def _delete_file_if_exists(filepath: str):
     #TODO: LOOK FOR DELETION ALTERNATIVE
     path = Path(filepath)
     if path.exists() and path.is_file():
-        path.unlink()
+        os.remove(filepath)
 
 # ==================== FILE SERVICE CLASS ====================
 class FileService:
     def __init__(self):
         self.repo = FileRepository()
+        self.limits = LimitsRepository()
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
     # ==================== ADMIN OPERATIONS ====================
@@ -57,6 +48,8 @@ class FileService:
         return await self.repo.update_tags(fileId, tags)
 
     async def delete_file(self,  fileId: int):
+        file = await self.repo.get_file_by_id(fileId)
+        _delete_file_if_exists(file.filepath)
         return await self.repo.delete_file(fileId)
 
     # ==================== USER OPERATIONS ====================
@@ -69,7 +62,10 @@ class FileService:
     async def upload_file(self, request: Request, file: UploadFile,
                           tags: list[int], userId: int, name: str):
         # Save file and get metadata
-        filepath, size = await _save_file_to_disk(file)
+        if not self.limits.countOverflow(userId):
+            raise PermissionError
+        filepath, size = await self._save_file_to_disk(file,userId)
+
 
         # Prepare request
         add_file_request = AddFileRequest(
@@ -97,15 +93,18 @@ class FileService:
         #     raise HTTPException(status_code=403, detail=f"File {fileId} is not pending.")
         if file:
 
-            # Delete old file
+            # Change old file
             filePath = Path(existing_file.filepath)
 
             if filePath.exists():
                 #change content
                 with open(filePath, "wb") as f:
                     content = await file.read()
+                    if not self.limits.sizeOverflow(existing_file.uploaded_by, len(content)-existing_file.size):
+                        raise PermissionError
                     f.write(content)
                     size=len(content)
+        else: size=existing_file.size
         updateFileRequest = UpdateFileRequest(
             id=fileId,
             filename=name,
@@ -125,3 +124,18 @@ class FileService:
         # TODO: Add ownership check
         # if file.uploaded_by != user.id and user.role == Role.USER:
         #     raise HTTPException(status_code=403, detail="Not your file")
+
+    # ==================== FILE OPERATIONS ====================
+    async def _save_file_to_disk(self,file: UploadFile, userId: int) -> tuple[str, int]:
+        """Save uploaded file to disk and return (filepath, size)"""
+        ext = os.path.splitext(file.filename)[1]
+        hashedName = secrets.token_hex(16) + ext
+        filePath = UPLOAD_DIR / hashedName
+
+        with open(filePath, "wb") as f:
+            content = await file.read()
+            if not self.limits.sizeOverflow(userId,len(content)):
+                raise PermissionError
+            f.write(content)
+
+        return str(filePath), len(content)
