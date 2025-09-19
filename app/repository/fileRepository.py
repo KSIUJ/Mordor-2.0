@@ -130,18 +130,17 @@ class FileRepository:
                 try:
                     await cursor.execute("""
                                          UPDATE files
-                                         SET name = ?,size = ?,uploaded_at = ?,version= ?
+                                         SET name = ?,size = ?,uploaded_at = ?,version= ?, filepath=?
                                          WHERE id = ?
                                          """, (
                                              request.filename,
                                              request.size,
                                              request.uploaded_at,
                                              request.version,
+                                             request.filepath,
                                              request.id
                                          ))
                     await conn.commit()
-                    if cursor.rowcount == 0:
-                        raise FileNotFoundError()
 
                     await self.update_tags(request.id,tags)
 
