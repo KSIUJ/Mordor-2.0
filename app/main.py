@@ -37,9 +37,9 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health","/user/upload","/user/update_file", "/user/get_files","/user/get_tags","/update/","/upload/"],
+    Role.USER: ["/test/auth/user", "/health","/user/upload","/user/file", "/user/files","/user/tags","/update/","/upload/"],
     Role.MANAGER: ["/test/auth/manager"],
-    Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/update_file", "/admin/get_all_files","/admin/change_status"],
+    Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/file", "/admin/all_files","/admin/change_status"],
 }
 #Add Role Middleware
 app.add_middleware(AuthMiddleware, config = {
