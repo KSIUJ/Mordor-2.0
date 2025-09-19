@@ -1,0 +1,45 @@
+:root{
+    --main-bg-color: #EAE4D5;
+    --secondary-bg-color: #F2F2F2;
+    --third-bg-color: #C46A3A;
+    --main-text-color: #000000;
+    --secondary-text-color: #B6B09F;
+}
+
+
+.navbar-custom{
+    background-color: var(--third-bg-color);
+    color: var(--main-text-color);
+    box-shadow: 0 2px 4px 1px rgba(0,0,0,0.1);
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link{
+    color: var(--main-text-color);
+}
+
+.navbar-custom .navbar-toggler{
+    border: none;
+}
+
+.navbar-custom .navbar-toggler:hover{
+    background-color: #a95a30;
+}
+
+.navbar-custom .navbar-toggler:focus{
+    box-shadow: none;
+    background-color: #a95a30;
+    border: solid 1px #512b17;
+}
+
+.body-custom{
+    background-color: var(--main-bg-color);
+}
+
+.footer .container-xl{
+    border-top: solid 1px rgb(74, 74, 74);
+    margin-top: 4rem;
+    padding-top: 2rem;
+    margin-bottom: 2rem;
+}
+
