@@ -16,13 +16,13 @@
     <link rel="stylesheet" href="//cdn.datatables.net/2.3.3/css/dataTables.dataTables.min.css" />
     <link href="https://cdn.datatables.net/columncontrol/1.0.7/css/columnControl.dataTables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdn.datatables.net/responsive/3.0.6/css/responsive.dataTables.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css')}}">
 
     <script defer src="//cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
     <script defer src="https://cdn.datatables.net/columncontrol/1.0.7/js/dataTables.columnControl.min.js"></script>
     <script defer src="https://cdn.datatables.net/responsive/3.0.6/js/dataTables.responsive.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css')}}">
     {% block head %} {% endblock %}
 </head>
 <body class="body-custom">
