@@ -1,4 +1,16 @@
 services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    hostname: chromadb
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    volumes:
+      - ./Embeddings/chroma_data:/chroma
   mordor-2.0:
     image: mordor-2.0:latest
     hostname: mordor-2.0
@@ -20,20 +32,3 @@ services:
       CHROMA_SERVER: http://chromadb:8000
     depends_on:
       - chromadb
-    networks:
-      - app_network
-
-  chromadb:
-    image: chromadb/chroma:latest
-    container_name: chromadb
-    hostname: chromadb
-    restart: always
-    ports:
-      - "8000:8000"
-    environment:
-      - IS_PERSISTENT=TRUE
-      - PERSIST_DIRECTORY=/chroma/chroma
-    volumes:
-      - ./Embeddings/chroma_data:/chroma
-    networks:
-      - app_network
