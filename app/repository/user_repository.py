@@ -2,7 +2,19 @@ from db import db
 from typing import Optional
 import logging
 import aiosqlite
+from model.exceptions import DatabaseError
 from model.user import *
+
+def process_users(rows):
+    """Helper method to avoid redundant code"""
+    users = []
+    for row in rows:
+        users.append(User(
+            id=row[0],
+            username=row[1],
+            role=row[2],
+        ))
+    return users
 
 class UserRepository:
     def __init__(self, db_connection):
@@ -87,5 +99,20 @@ class UserRepository:
                     number_limit=row[5]
                 )
             return None
+    async def get_all_users(self):
+        """Get basic info about users - id, username, role"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute("""
+                                         SELECT id, username, role
+                                         FROM users
+                                         """)
+                    rows = await cursor.fetchall()
+                    users = process_users(rows)
+                    conn.close()
+                    return users
+                except Exception as e:
+                    raise DatabaseError()
 
 user_repo = UserRepository(db)
