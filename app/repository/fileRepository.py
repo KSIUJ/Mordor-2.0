@@ -8,7 +8,8 @@ from db import db
 from model.exceptions import DatabaseError
 from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRequest, UpdateFileRequest
 from model.tagModel import TagModel
-
+from model.user import *
+from parser.astToSQL import parseAST
 
 def process_files(rows):
     """Helper method to avoid redundant code"""
@@ -119,7 +120,53 @@ class FileRepository:
                     return files
                 except Exception as e:
                     raise DatabaseError()
-
+                
+    async def get_files_by_tags(self, ast, status: List[FileStatus]):
+        """Returns files matching given tags and status"""
+        sql, params = parseAST(ast)
+        status_sql = "(" + ",".join(f"'{st.value}'" for st in status) + ")"
+        
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute(f"""
+                                         SELECT id, name, size, uploaded_by, status, filepath
+                                         FROM files
+                                         WHERE status IN {status_sql} and {sql}
+                                         """, params)
+                    rows = await cursor.fetchall()
+                    files = process_files(rows)
+                    return files
+                except Exception as e:
+                    raise DatabaseError()
+        
+            
+                    
+    async def get_user_uploaded_files(self, user: UserWithLimits):
+            """Returns basic info about accepted files to common user"""
+            async with self.db.get_connection() as conn:
+                async with conn.cursor() as cursor:
+                    try:
+                        await cursor.execute("""
+                                            SELECT id, name, size, uploaded_by, status, filepath, uploaded_at
+                                            FROM files
+                                            WHERE uploaded_by = ?
+                                            """, (user.id,))
+                        rows = await cursor.fetchall()
+                        files = []
+                        for row in rows:
+                            files.append(FileInfo(
+                                id=row[0],
+                                name=row[1],
+                                size=row[2],
+                                uploaded_by=row[3],
+                                status=FileStatus(row[4]),
+                                filepath=row[5],
+                                uploaded_at=row[6]
+                            ))
+                        return files
+                    except Exception as e:
+                        raise DatabaseError()
     # =========================== UPDATES ==============================
 
 
@@ -247,4 +294,6 @@ class FileRepository:
                     conn.close()
                     return None
                 except Exception as e:
-                    raise DatabaseError()
+                    raise DatabaseError()      
+file_repo = FileRepository()
+

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi import Request
+from fastapi.responses import FileResponse
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from router.admin.fileManagement import router as admin_file_router
@@ -10,6 +10,8 @@ from router.user.fileManagement import router as user_file_router
 from router.user.tagRouter import router as tag_router
 from router.upload import router as upload_router
 from router.update import router as update_router
+from router.User import router as user_router
+
 from db import db
 import logging
 import asyncio
@@ -55,6 +57,8 @@ app.include_router(user_file_router)
 app.include_router(tag_router)
 app.include_router(upload_router)
 app.include_router(update_router)
+app.include_router(user_router)
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize database connection on startup with retry logic"""
@@ -85,5 +89,3 @@ async def shutdown_event():
 @app.get("/")
 async def root():
     return {"message": "Hello, World4!"}
-# Endpoints to check upload and update pages
-# TODO: ??? Remove later ???
