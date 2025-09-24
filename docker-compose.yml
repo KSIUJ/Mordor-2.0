@@ -37,3 +37,6 @@ services:
       - ./Embeddings/chroma_data:/chroma
     networks:
       - app_network
+networks:
+  app_network:
+    driver: bridge

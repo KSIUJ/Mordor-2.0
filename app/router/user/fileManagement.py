@@ -40,13 +40,8 @@ async def update_file(
 ):
     tags = json.loads(tags)
     await service.update_file(file, tags,file_id, name)
-    return RedirectResponse(url="/update",status_code=303)
+    return RedirectResponse(url=f"/update/${file_id}",status_code=303)
 
-@router.get("/files")
-@handle_file_service_errors
-async def get_files(request: Request):
-    result = await service.get_accepted_files(request)
-    return result
 
 @router.get("/placeholder_search")
 async def placeholder():
