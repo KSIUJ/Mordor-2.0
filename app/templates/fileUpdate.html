@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block head %}
+    <style>
+        body {
+            background-color: #EAE4D5;
+        }
+        form {
+            background-color: #F2F2F2;
+        }
+        #addTagBtn{
+            background-color: #B6B09F;
+            border-color: #756F60;
+        }
+        #addTagBtn:hover{
+            background-color: #756F60;
+        }
+        .tag-badge {
+          background-color: #756F60;
+          color: white;
+        }
+    </style>
+{% endblock %}
+{% block title %}Update pliku{% endblock %}
+
+{% block content %}
+    {% if is_admin %}
+    <form action="/admin/file/{{ file.id }}" method="post" enctype="multipart/form-data"
+          id="updateForm" class="container border rounded p-4">
+    {% elif is_user %}
+    <form action="/user/file/{{ file.id }}" method="post" enctype="multipart/form-data"
+          id="updateForm" class="container border rounded p-4">
+    {% endif %}
+        <h1 class="mb-3">Modify entry</h1>
+        <div class="form-floating">
+            <input class="form-control w-50 mb-3" type="text" id="fileName" name="name" placeholder="File name:" value="{{ file.name }}">
+            <label for="fileName">File name:</label>
+        </div>
+        <h2>Leaving next field empty still updates other fields</h2>
+        <label class="form-label mb-3" for="uploadedFile">Uploaded file:</label>
+        <input class="form-control w-50 mb-3" type="file" id="uploadedFile" name="file">
+        <h6 href="{{ file.filepath }}">{{ file.filepath }}</h6>
+        <label class="form-label mb-3" for="tags" style="font-size: 25px;">Tags:</label>
+        <div class="d-flex align-items-center mb-3">
+            <input class="form-control w-25 mb-3" list="tagOptions"
+                   id="tags" placeholder="Type to search...">
+            <datalist id="tagOptions">
+                {% for tag in tags %}
+                    <option value="{{tag.name}}" data-id="{{ tag.id }}"></option>
+                {% endfor %}
+            </datalist>
+            <button type="button" class="btn btn-primary ms-2 mb-3" id="addTagBtn">Add</button>
+        </div>
+
+        <ul id="selectedTags" class="list-inline tag-list mb3">
+            {% for tag in filetags %}
+                    <li class="list-inline-item badge tag-badge" data-tag-id="{{tag.id}}">
+                        {{tag.name}} <button type="button" class="btn-close btn-close-white btn-sm"></button>
+                    </li>
+            {% endfor %}
+        </ul>
+        <input type="hidden" name="tags" id="tagsInput"
+               value="{{ filetags | map(attribute='id') | list | tojson }}"
+        >
+        <div>
+            <button id="submit" class="btn btn-success" type="submit">Edit</button>
+        </div>
+    </form>
+    {% if is_admin %}
+    <form action="/admin/change_status" method="post" enctype="multipart/form-data"
+          id="updateForm" class="container border rounded p-4">
+            <input type="hidden" name="file_id" id="fileId"
+                value="{{ file.id }}">
+            <input type="hidden" name="version" id="fileVersion"
+                value="{{ file.version }}">
+            <label class="form-label" for="fileStatus">File status:</label>
+            <select name="status" class="form-select w-25 mb-3" aria-label="Select status" id="status" style="margin-left: 10px">
+              <option value="pending">pending</option>
+              <option value="accepted">accepted</option>
+              <option value="rejected">rejected</option>
+            </select>
+        <button type="submit" id="changeStatus" class="btn btn-success">Change status</button>
+    </form>
+    {% endif %}
+    <script src="/static/js/utils/manageTagList.js"></script>
+{% endblock %}

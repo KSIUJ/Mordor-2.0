@@ -7,7 +7,11 @@ from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from router.admin.fileManagement import router as admin_file_router
 from router.user.fileManagement import router as user_file_router
+from router.user.tagRouter import router as tag_router
+from router.upload import router as upload_router
+from router.update import router as update_router
 from router.User import router as user_router
+
 from db import db
 import logging
 import asyncio
@@ -35,9 +39,9 @@ from typing import Dict, List
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health", "/profile", "/user/files"],
+    Role.USER: ["/test/auth/user", "/health","/user/upload","/user/file", "/user/files","/user/tags","/update/","/upload/"],
     Role.MANAGER: ["/test/auth/manager"],
-    Role.ADMIN: ["/test/auth/admin"],
+    Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/file", "/admin/all_files","/admin/change_status"],
 }
 #Add Role Middleware
 app.add_middleware(AuthMiddleware, config = {
@@ -50,6 +54,9 @@ app.include_router(health_router)
 app.include_router(test_router)
 app.include_router(admin_file_router)
 app.include_router(user_file_router)
+app.include_router(tag_router)
+app.include_router(upload_router)
+app.include_router(update_router)
 app.include_router(user_router)
 
 @app.on_event("startup")
