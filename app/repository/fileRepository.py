@@ -1,4 +1,5 @@
 import json
+import json
 from enum import Enum
 from typing import List
 
@@ -7,6 +8,7 @@ from fastapi import HTTPException
 from db import db
 from model.exceptions import DatabaseError
 from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRequest, UpdateFileRequest
+from model.tagModel import TagModel
 from model.user import *
 from parser.astToSQL import parseAST
 from model.tagModel import TagModel
@@ -178,18 +180,17 @@ class FileRepository:
                 try:
                     await cursor.execute("""
                                          UPDATE files
-                                         SET name = ?,size = ?,uploaded_at = ?,version= ?
+                                         SET name = ?,size = ?,uploaded_at = ?,version= ?, filepath=?
                                          WHERE id = ?
                                          """, (
                                              request.filename,
                                              request.size,
                                              request.uploaded_at,
                                              request.version,
+                                             request.filepath,
                                              request.id
                                          ))
                     await conn.commit()
-                    if cursor.rowcount == 0:
-                        raise FileNotFoundError()
 
                     await self.update_tags(request.id,tags)
 

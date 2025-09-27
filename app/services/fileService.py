@@ -13,11 +13,6 @@ from services.authservice import User, Role
 #TODO: set correct path in docker-compose
 UPLOAD_DIR=Path(os.getenv("UPLOAD_DIR", "uploads"))
 
-
-
-
-
-
 def _delete_file_if_exists(filepath: str):
     """Safely delete file if it exists"""
 
@@ -88,26 +83,34 @@ class FileService:
                           tags: list[int], fileId: int, name: str):
 
         existing_file = await self.repo.get_file_by_id(fileId)
-
         # if existing_file.status != FileStatus.PENDING:
         #     raise HTTPException(status_code=403, detail=f"File {fileId} is not pending.")
         if file:
 
             # Change old file
             filePath = Path(existing_file.filepath)
-
             if filePath.exists():
                 #change content
                 with open(filePath, "wb") as f:
                     content = await file.read()
-                    if not self.limits.sizeOverflow(existing_file.uploaded_by, len(content)-existing_file.size):
-                        raise PermissionError
+                    # TODO: UPDATE LIMITS & UNCOMMENT FOLLOWING LINES
+                    # if not self.limits.sizeOverflow(existing_file.uploaded_by, len(content)-existing_file.size):
+                    #     raise PermissionError
                     f.write(content)
                     size=len(content)
+
+                # !!! DON'T FORGET TO CHANGE EXTENSION WHILE MODIFYING FILE !!!
+                uploaded_ext = Path(file.filename).suffix
+                existing_file.filepath = filePath.with_suffix(uploaded_ext)
+                if filePath!= existing_file.filepath:
+                        filePath.rename(existing_file.filepath)
+
         else: size=existing_file.size
+        # return existing_file.filepath
         updateFileRequest = UpdateFileRequest(
             id=fileId,
             filename=name,
+            filepath=str(existing_file.filepath),
             size=size,
             uploaded_at=datetime.now(),
             version=existing_file.version+1
@@ -134,8 +137,9 @@ class FileService:
 
         with open(filePath, "wb") as f:
             content = await file.read()
-            if not self.limits.sizeOverflow(userId,len(content)):
-                raise PermissionError
+            # TODO: UPDATE LIMITS & UNCOMMENT FOLLOWING LINES
+            # if not self.limits.sizeOverflow(userId,len(content)):
+            #     raise PermissionError
             f.write(content)
 
         return str(filePath), len(content)

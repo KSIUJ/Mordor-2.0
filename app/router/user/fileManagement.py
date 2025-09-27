@@ -1,6 +1,7 @@
 import json
 
-from fastapi import APIRouter, UploadFile, File, Form,Request, Query, HTTPException, Body, Response
+from fastapi import APIRouter, UploadFile, File, Form, Request, Query, HTTPException
+from starlette.responses import RedirectResponse
 from fastapi.responses import FileResponse
 from starlette.responses import RedirectResponse
 
@@ -41,31 +42,12 @@ async def update_file(
 ):
     tags = json.loads(tags)
     await service.update_file(file, tags,file_id, name)
-    return RedirectResponse(url="/update",status_code=303)
+    return RedirectResponse(url=f"/update/${file_id}",status_code=303)
 
-
-@router.get("/file/{file_id}")
-async def get_file(file_id: int, request: Request):
-     # Get file from database
-    file = await file_repo.get_file_by_id(file_id)
-    # Check if file exists and user has permission to download
-    if not file:
-        raise HTTPException(status_code=404, detail="File not found")
-    
-    # For security, you might want to add additional checks here
-    # For example: if file.status == FileStatus.ACCEPTED or user is admin
-    
-    # Return the file for download
-    return FileResponse(
-        path=file.filepath,
-        filename=f"{file.name}.{file.filepath.split('.')[1]}",
-        media_type='application/octet-stream'
-    )
-
-@router.get("/files")
+@router.get("/get_files")
 @handle_file_service_errors
-async def get_files():
-    result = await service.get_accepted_files()
+async def get_files(request: Request):
+    result = await service.get_accepted_files(request)
     return result
 
 @router.get("/placeholder_search")

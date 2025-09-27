@@ -58,7 +58,7 @@ async def update_file(
         tags=[]
     else:
         tags = json.loads(tags)
-    return await service.update_file(file=file, tags=tags, fileId=file_id, name=name)
+    await service.update_file(file, tags, file_id, name)
     return RedirectResponse(url=f"/update/{file_id}",status_code=303)
 
 @router.post("/change_tags")
