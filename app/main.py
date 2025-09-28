@@ -1,8 +1,9 @@
-from fastapi import FastAPI 
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi import Request
 from router.health import router as health_router
 from router.testEndpoints import router as test_router
 from router.admin.fileManagement import router as admin_file_router
@@ -11,7 +12,6 @@ from router.user.tagRouter import router as tag_router
 from router.upload import router as upload_router
 from router.update import router as update_router
 from router.User import router as user_router
-
 from db import db
 import logging
 import asyncio
@@ -59,6 +59,9 @@ app.include_router(upload_router)
 app.include_router(update_router)
 app.include_router(user_router)
 
+app.include_router(tag_router)
+app.include_router(upload_router)
+app.include_router(update_router)
 @app.on_event("startup")
 async def startup_event():
     """Initialize database connection on startup with retry logic"""
@@ -86,6 +89,38 @@ async def shutdown_event():
     # !!!!!!!!!!!!!👎👎👎👎 USE FOR TESTING
     await db.delete()
 
+
+from repository.user_repository import user_repo
+from repository.fileRepository import file_repo
+from model.user import UserWithLimits
+from model.fileModel import FileInfo, FileStatus
+from typing import List
+import logging
+
+def format_file_size(size_bytes: int) -> str:
+    """Convert bytes to be in a readable format"""
+    if size_bytes == 0:
+        return "0 B"
+    
+    size_names = ["B", "KB", "MB", "GB", "TB"]
+    i = 0
+    while size_bytes >= 1024 and i < len(size_names) - 1:
+        size_bytes /= 1024.0
+        i += 1
+    
+    return f"{size_bytes:.1f} {size_names[i]}"
+
+
+# async def root():
+#     return {"message": "Hello, World4!"}
 @app.get("/")
-async def root():
-    return {"message": "Hello, World4!"}
+async def main(request: Request):
+    files : List[FileInfo] = await file_repo.get_accepted_files()
+    for i, value in enumerate(files):
+        files[i].status = files[i].status.value
+        files[i].name = f"{files[i].name}.{files[i].filepath.split('.')[1]}"
+    return templates.TemplateResponse("main.html", {
+        "request": request,
+        "files" : files,
+        "format_file_size": format_file_size
+        })

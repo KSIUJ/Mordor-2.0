@@ -36,7 +36,6 @@ class UpdateFileRequest(BaseModel):
     """
     id: int
     filename: str
-    filepath: str
     size: int
     version: int
     uploaded_at: datetime

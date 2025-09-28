@@ -1,4 +1,5 @@
 import json
+import json
 from enum import Enum
 from typing import List
 
@@ -10,6 +11,8 @@ from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRe
 from model.tagModel import TagModel
 from model.user import *
 from parser.astToSQL import parseAST
+from model.tagModel import TagModel
+
 
 def process_files(rows):
     """Helper method to avoid redundant code"""
