@@ -32,3 +32,23 @@ services:
       CHROMA_SERVER: http://chromadb:8000
     depends_on:
       - chromadb
+    networks:
+      - app_network
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    hostname: chromadb
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    volumes:
+      - ./Embeddings/chroma_data:/chroma
+    networks:
+      - app_network
+networks:
+  app_network:
+    driver: bridge

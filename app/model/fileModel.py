@@ -17,6 +17,7 @@ class FileInfo(BaseModel):
     filepath: str
     status: FileStatus
     uploaded_at: Optional[datetime] = None
+    version:int =None
 
 class AddFileRequest(BaseModel):
     """To add a file we need its model & selected tags"""
@@ -35,13 +36,15 @@ class UpdateFileRequest(BaseModel):
     """
     id: int
     filename: str
-    filepath: str
     size: int
+    version: int
+    uploaded_at: datetime
 
 class ChangeStatusRequest(BaseModel):
     """To update status we just need id"""
     file_id: int
     status: FileStatus
+    version: int
 
 class ChangeTagsRequest(BaseModel):
     """To update tags we need id and new list of tags"""

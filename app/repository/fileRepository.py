@@ -1,3 +1,5 @@
+import json
+import json
 from enum import Enum
 from typing import List
 
@@ -6,8 +8,11 @@ from fastapi import HTTPException
 from db import db
 from model.exceptions import DatabaseError
 from model.fileModel import AddFileRequest, FileInfo, FileStatus, ChangeStatusRequest, UpdateFileRequest
+from model.tagModel import TagModel
 from model.user import *
 from parser.astToSQL import parseAST
+from model.tagModel import TagModel
+
 
 def process_files(rows):
     """Helper method to avoid redundant code"""
@@ -19,7 +24,8 @@ def process_files(rows):
             size=row[2],
             uploaded_by=row[3],
             status=FileStatus(row[4]),
-            filepath=row[5]
+            filepath=row[5],
+            uploaded_at=row[6]
         ))
     return files
 
@@ -39,7 +45,7 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status,filepath
+                                         SELECT id, name, size, uploaded_by, status,filepath,uploaded_at,version
                                          FROM files
                                          WHERE id = ?
                                          """, (fileId,))
@@ -55,7 +61,9 @@ class FileRepository:
                         size=row[2],
                         uploaded_by=row[3],
                         status=FileStatus(row[4]),
-                        filepath=row[5]
+                        filepath=row[5],
+                        uploaded_at=row[6],
+                        version=row[7]
                     )
                 except Exception as e:
                     raise DatabaseError()
@@ -66,7 +74,7 @@ class FileRepository:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status, filepath
+                                         SELECT id, name, size, uploaded_by, status, filepath,uploaded_at
                                          FROM files
                                          WHERE status = 'accepted'
                                          """)
@@ -77,13 +85,36 @@ class FileRepository:
                 except Exception as e:
                     raise DatabaseError()
 
+    async def get_files_tags(self,fileId: int):
+        """Returns basic info about accepted files to common user"""
+        async with self.db.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                try:
+                    await cursor.execute("""
+                                         SELECT id,name
+                                         FROM tag_file JOIN tags ON tags.id = tag_file.tag_id
+                                         WHERE file_id = ?
+                                         """, (fileId,))
+                    tags=[]
+                    rows = await cursor.fetchall()
+                    # CREATES LIST OF TAGS
+                    for row in rows:
+                        tags.append(TagModel(
+                            id=row[0],
+                            name=row[1]
+                        ))
+                    conn.close()
+                    return tags
+                except Exception as e:
+                    raise DatabaseError()
+
     async def get_all_files(self):
         """Returns basic info about accepted files to common user"""
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 try:
                     await cursor.execute("""
-                                         SELECT id, name, size, uploaded_by, status,filepath
+                                         SELECT id, name, size, uploaded_by, status,filepath,uploaded_at
                                          FROM files
                                          """)
                     rows = await cursor.fetchall()
@@ -147,27 +178,23 @@ class FileRepository:
         async with self.db.get_connection() as conn:
             async with conn.cursor() as cursor:
                 try:
-
                     await cursor.execute("""
                                          UPDATE files
-                                         SET name     = ?,
-                                             filepath = ?,
-                                             size     = ?
+                                         SET name = ?,size = ?,uploaded_at = ?,version= ?, filepath=?
                                          WHERE id = ?
                                          """, (
                                              request.filename,
-                                             request.filepath,
                                              request.size,
+                                             request.uploaded_at,
+                                             request.version,
+                                             request.filepath,
                                              request.id
                                          ))
                     await conn.commit()
-                    if cursor.rowcount == 0:
-                        raise FileNotFoundError()
 
                     await self.update_tags(request.id,tags)
 
                     conn.close()
-                    return None
                 except Exception as e:
                     raise DatabaseError()
 
@@ -224,8 +251,8 @@ class FileRepository:
 
                     status_value = request.status.value if isinstance(request.status, Enum) else request.status
                     await cursor.execute("""
-                                            INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by)
-                                            VALUES (?, ?, ?, ?, ?, ?)
+                                            INSERT INTO files (name, filepath, status, size, uploaded_at, uploaded_by,version)
+                                            VALUES (?, ?, ?, ?, ?, ?,1)
                                         """, (
                         request.filename,
                         request.filepath,
