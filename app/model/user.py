@@ -8,13 +8,12 @@ class UserLimits(BaseModel):
 class User(BaseModel):
     id: Optional[int] = None
     username: str
-    role: str
+    sub: str
     email: Optional[str] = None
 
 class UserWithLimits(BaseModel):
     id: Optional[int] = None
     username: str
-    role: str
     email: Optional[str] = None
     size_limit: int
     number_limit: int

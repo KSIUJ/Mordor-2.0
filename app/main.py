@@ -13,9 +13,10 @@ from router.upload import router as upload_router
 from router.update import router as update_router
 from router.User import router as user_router
 from db import db
+from repository.user_repository import user_repo
 import logging
 import asyncio
-from services.authservice import AuthMiddleware, Role
+# from services.authservice import AuthMiddleware, Role
 from templates import patch_templates
 
 app = FastAPI()
@@ -34,24 +35,41 @@ app.add_middleware(
 )
 
 
+from fastapi import FastAPI, Request
+from ksi_oidc_fastapi.auth_middleware import AuthMiddleware
+from ksi_oidc_fastapi.auth_router import router as auth_router
+from ksi_oidc_fastapi.models import Role
 from typing import Dict, List
 # Route configuration: Role -> List of routes
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
 ROLE_ROUTES: Dict[Role, List[str]] = {
-    Role.PUBLIC: ["/"],
-    Role.USER: ["/test/auth/user", "/health","/user/upload","/user/file", "/user/files","/user/tags","/update/","/upload/"],
-    Role.MANAGER: ["/test/auth/manager"],
-    Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/file", "/admin/all_files","/admin/change_status"],
+    Role.PUBLIC: ["/", "/auth/login", "/auth/callback", "/auth/logout"],
+    Role.USER: ["/profile", "/test/auth/user", "/health","/user/upload","/user/file", "/user/files","/user/tags","/update/","/upload/", "/auth/protected"],
+    Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/file", "/admin/all_files","/admin/change_status", "/auth/admin"],
 }
 #Add Role Middleware
-app.add_middleware(AuthMiddleware, config = {
-    "ROLE_ROUTES" : ROLE_ROUTES,                                     
-                                             })
+# app.add_middleware(AuthMiddleware, config = {
+#     "ROLE_ROUTES" : ROLE_ROUTES,                                     
+#                                              })
+
+app.add_middleware(
+  AuthMiddleware,
+  user_repository_instance=user_repo,
+  session_cookie_name="session_id",
+  session_cookie_httponly=True,
+  session_cookie_secure=True,
+  route_configuration=ROLE_ROUTES,
+  login_redirect_path="/auth/login",
+  role_hierarchy=[Role.PUBLIC, Role.USER, Role.ADMIN],
+)
+
+
 
 # Include routers
+app.include_router(auth_router)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(health_router)
-app.include_router(test_router)
+# app.include_router(test_router)
 app.include_router(admin_file_router)
 app.include_router(user_file_router)
 app.include_router(tag_router)
@@ -62,6 +80,8 @@ app.include_router(user_router)
 app.include_router(tag_router)
 app.include_router(upload_router)
 app.include_router(update_router)
+
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize database connection on startup with retry logic"""

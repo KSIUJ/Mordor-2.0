@@ -12,22 +12,10 @@ dependencies = [
     "pydantic>=2.0.0",
     "jinja2>=3.0.0",
     "requests>=2.32.4",
+    "ksi-oidc-fastapi",
 ]
 
 [tool.uv.sources]
-ksi-oidc-common = { workspace = true }
+# ksi-oidc-common = { workspace = true }
 # ksi-oidc-django = { workspace = true }
-ksi-oidc-fastapi = { workspace = true }
-
-[dependency-groups]
-dev = [
-    "mypy>=1.17.1",
-    "ruff>=0.12.12",
-]
-
-# Optional: Uncomment if you want to configure this as a workspace
-# [tool.uv]
-# package = false
-# 
-# [tool.uv.workspace]
-# members = ["common", "fastapi"]
+ksi-oidc-fastapi = { git = "https://github.com/KSIUJ/ksi-oidc-python", subdirectory = "fastapi", rev = "94e4ed610819d15a8943516c5b28c1b52d8d1b49" }

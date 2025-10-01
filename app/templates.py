@@ -41,11 +41,11 @@ def patch_templates():
                request = context.get('request')
                if request:
                    user=getattr(request.state, 'user', None)
-
+                   logging.error(user)
                    context.setdefault('current_user', getattr(request.state, 'user', None))
-                   context.setdefault('is_authenticated', is_authenticated(user))
-                   context.setdefault('is_admin', is_admin(user))
-                   context.setdefault('is_user', is_user(user))
+                   context.setdefault('is_authenticated', is_authenticated(request.state))
+                   context.setdefault('is_admin', is_admin(request.state))
+                   context.setdefault('is_user', is_user(request.state))
 
 
                return original(self, name, context, **kwargs)

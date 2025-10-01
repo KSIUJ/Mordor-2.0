@@ -9,7 +9,7 @@ CREATE TABLE users_limits (
 CREATE TABLE users (
   id integer PRIMARY KEY AUTOINCREMENT,
   username varchar(50) UNIQUE NOT NULL,  -- Unique username for each user
-  role varchar NOT NULL references users_limits(user_role),   -- User role for permissions
+  sub varchar(50) UNIQUE NOT NULL,   -- User sub
   email varchar(100) UNIQUE               -- Unique email for each user
 );
 

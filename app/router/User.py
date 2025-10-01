@@ -31,7 +31,7 @@ async def profile(request: Request):
     """
     Profile route
     """
-    user : UserWithLimits = await user_repo.get_user_with_limits(request.state.user.id)
+    user : UserWithLimits = await user_repo.get_user_with_limits(request.state.user.id, request.state.role)
     files : List[FileInfo] = await file_repo.get_user_uploaded_files(user)
     for i, value in enumerate(files):
         files[i].status = files[i].status.value

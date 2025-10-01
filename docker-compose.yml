@@ -1,16 +1,4 @@
 services:
-  chromadb:
-    image: chromadb/chroma:latest
-    container_name: chromadb
-    hostname: chromadb
-    restart: always
-    ports:
-      - "8000:8000"
-    environment:
-      - IS_PERSISTENT=TRUE
-      - PERSIST_DIRECTORY=/chroma/chroma
-    volumes:
-      - ./Embeddings/chroma_data:/chroma
   mordor-2.0:
     image: mordor-2.0:latest
     hostname: mordor-2.0
@@ -22,14 +10,18 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+    command: ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8081", "--reload"]
     ports:
-      - "8081:8080"
+      - "8081:8081"
     environment:
-      #set correct upload directory
       UPLOAD_DIR: /db/data/uploads
       DATABASE_URL: sqlite:///db/data/database.db
       CHROMA_SERVER: http://chromadb:8000
+      # OAuth Configuration
+      ISSUER : http://localhost:8080/realms/Mordor-2.0
+      CLIENT_ID : TestClientSecret
+      CLIENT_SECRET : g8rTPq20CQEWV3xODDX4jHYZe5qa1BY8
+
     depends_on:
       - chromadb
     networks:
@@ -49,6 +41,8 @@ services:
       - ./Embeddings/chroma_data:/chroma
     networks:
       - app_network
+
 networks:
   app_network:
     driver: bridge
+    external : true
