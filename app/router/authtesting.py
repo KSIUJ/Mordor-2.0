@@ -16,13 +16,13 @@ async def auth_home(request: Request):
 async def public_route(request: Request):
     """Public endpoint accessible to all."""
     user = request.state.user
-    return {"message": f"This is a public endpoint, {user.username} with role {user.role}"}
+    return {"message": f"This is a public endpoint, {user.username} with role {request.state.role}"}
 
 @router.get("/user")
 async def user_route(request: Request):
     """Endpoint accessible to USER, MANAGER, and ADMIN users."""
     user = request.state.user
-    return {"message": f"Welcome, {user.username} with role {user.role}"}
+    return {"message": f"Welcome, {user.username} with role {request.state.role}"}
 
 @router.get("/manager")
 async def manager_route(request: Request):
@@ -40,7 +40,7 @@ async def admin_route(request: Request):
 async def random_route(request: Request):
     """Sample unlisted route accessible to USER, MANAGER, and ADMIN users."""
     user = request.state.user
-    return {"message": f"Random route accessed by {user.username} with role {user.role}"}
+    return {"message": f"Random route accessed by {user.username} with role {request.state.role}"}
 
 @router.get("/login")
 async def login():

@@ -17,3 +17,10 @@ class UserWithLimits(BaseModel):
     email: Optional[str] = None
     size_limit: int
     number_limit: int
+
+
+class Role:
+    PUBLIC = "PUBLIC"
+    USER = "USER"
+    ADMIN = "admin"
+    MANAGER = "manager"

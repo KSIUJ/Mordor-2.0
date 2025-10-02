@@ -7,6 +7,8 @@ from starlette.responses import RedirectResponse
 from model.fileModel import ChangeStatusRequest, ChangeTagsRequest, FileStatus
 from services.fileService import FileService
 from utils.errorWrapper import handle_file_service_errors
+import logging
+
 
 router = APIRouter(prefix="/admin", tags=["admin","file"])
 service = FileService()
@@ -19,14 +21,14 @@ async def get_all_files():
     return await service.get_all_files()
 
 @router.post("/file")
-@handle_file_service_errors
+# @handle_file_service_errors
 async def upload(
     request: Request,
     file: UploadFile = File(...),
     tags: str = Form(None),
     name: str = Form(...)
 ):
-    userId = 1
+    userId = getattr(request.state.user, "id", 1)
     # TODO: Enable getting id of logged user
     if tags is None:
         tags = []
@@ -34,6 +36,7 @@ async def upload(
         tags = json.loads(tags)
     await service.upload_file(request=request, file=file, tags=tags, name=name, userId=userId)
     return RedirectResponse(url="/upload",status_code=303)
+
 @router.post("/change_status")
 @handle_file_service_errors
 async def change_status(

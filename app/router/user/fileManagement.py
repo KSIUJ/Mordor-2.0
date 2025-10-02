@@ -47,7 +47,7 @@ async def update_file(
 @router.get("/get_files")
 @handle_file_service_errors
 async def get_files(request: Request):
-    result = await service.get_accepted_files(request)
+    result = await file_repo.get_accepted_files()
     return result
 
 @router.get("/placeholder_search")

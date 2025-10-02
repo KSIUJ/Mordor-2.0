@@ -18,7 +18,7 @@ INSERT INTO tags VALUES
 INSERT INTO users_limits VALUES
 ('admin', 89000000, 38),
 ('USER', 9000000, 10),
-('X-role', 45000000, 16);
+('manager', 45000000, 16);
 
 INSERT INTO users VALUES
 (1, 'jdixon', 'USER1', 'hwoodard@example.com'),

@@ -57,7 +57,7 @@ class FileService:
     async def upload_file(self, request: Request, file: UploadFile,
                           tags: list[int], userId: int, name: str):
         # Save file and get metadata
-        if not self.limits.countOverflow(userId):
+        if not await self.limits.countOverflow(userId, request.state.role):
             raise PermissionError
         filepath, size = await self._save_file_to_disk(file,userId)
 
@@ -74,7 +74,7 @@ class FileService:
         )
 
         # Admin adds already accepted files
-        if request.state.user.role == Role.ADMIN:
+        if request.state.role == Role.ADMIN:
             add_file_request.status = FileStatus.ACCEPTED
 
         return await self.repo.insert_file_with_tags(add_file_request)
@@ -125,7 +125,7 @@ class FileService:
             raise ValueError
 
         # TODO: Add ownership check
-        # if file.uploaded_by != user.id and user.role == Role.USER:
+        # if file.uploaded_by != user.id and request.state.role == Role.USER:
         #     raise HTTPException(status_code=403, detail="Not your file")
 
     # ==================== FILE OPERATIONS ====================

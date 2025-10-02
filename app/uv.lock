@@ -263,7 +263,7 @@ wheels = [
 [[package]]
 name = "ksi-oidc-common"
 version = "1.0.0"
-source = { git = "https://github.com/KSIUJ/ksi-oidc-python?subdirectory=common&rev=94e4ed610819d15a8943516c5b28c1b52d8d1b49#94e4ed610819d15a8943516c5b28c1b52d8d1b49" }
+source = { git = "https://github.com/KSIUJ/ksi-oidc-python?subdirectory=common&rev=877c3c94d4e7f514f26f8a469c71dcb478d02f02#877c3c94d4e7f514f26f8a469c71dcb478d02f02" }
 dependencies = [
     { name = "oic" },
     { name = "types-requests" },
@@ -272,7 +272,7 @@ dependencies = [
 [[package]]
 name = "ksi-oidc-fastapi"
 version = "1.0.0"
-source = { git = "https://github.com/KSIUJ/ksi-oidc-python?subdirectory=fastapi&rev=94e4ed610819d15a8943516c5b28c1b52d8d1b49#94e4ed610819d15a8943516c5b28c1b52d8d1b49" }
+source = { git = "https://github.com/KSIUJ/ksi-oidc-python?subdirectory=fastapi&rev=877c3c94d4e7f514f26f8a469c71dcb478d02f02#877c3c94d4e7f514f26f8a469c71dcb478d02f02" }
 dependencies = [
     { name = "fastapi" },
     { name = "ksi-oidc-common" },
@@ -340,7 +340,7 @@ requires-dist = [
     { name = "aiosqlite", specifier = ">=0.17.0" },
     { name = "fastapi", specifier = ">=0.68.0" },
     { name = "jinja2", specifier = ">=3.0.0" },
-    { name = "ksi-oidc-fastapi", git = "https://github.com/KSIUJ/ksi-oidc-python?subdirectory=fastapi&rev=94e4ed610819d15a8943516c5b28c1b52d8d1b49" },
+    { name = "ksi-oidc-fastapi", git = "https://github.com/KSIUJ/ksi-oidc-python?subdirectory=fastapi&rev=877c3c94d4e7f514f26f8a469c71dcb478d02f02" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "python-multipart", specifier = ">=0.0.5" },
     { name = "requests", specifier = ">=2.32.4" },

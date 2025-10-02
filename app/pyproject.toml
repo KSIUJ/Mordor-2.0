@@ -18,4 +18,4 @@ dependencies = [
 [tool.uv.sources]
 # ksi-oidc-common = { workspace = true }
 # ksi-oidc-django = { workspace = true }
-ksi-oidc-fastapi = { git = "https://github.com/KSIUJ/ksi-oidc-python", subdirectory = "fastapi", rev = "94e4ed610819d15a8943516c5b28c1b52d8d1b49" }
+ksi-oidc-fastapi = { git = "https://github.com/KSIUJ/ksi-oidc-python", subdirectory = "fastapi", rev = "877c3c94d4e7f514f26f8a469c71dcb478d02f02" }

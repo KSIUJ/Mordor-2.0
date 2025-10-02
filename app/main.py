@@ -42,10 +42,13 @@ from ksi_oidc_fastapi.models import Role
 from typing import Dict, List
 # Route configuration: Role -> List of routes
 # Needs to include full routes but every route under the route included will also require the highest level the route included in
+from model.user import Role as CurRole
+Role = CurRole
 ROLE_ROUTES: Dict[Role, List[str]] = {
     Role.PUBLIC: ["/", "/auth/login", "/auth/callback", "/auth/logout"],
     Role.USER: ["/profile", "/test/auth/user", "/health","/user/upload","/user/file", "/user/files","/user/tags","/update/","/upload/", "/auth/protected"],
     Role.ADMIN: ["/test/auth/admin","/admin/upload","/admin/file", "/admin/all_files","/admin/change_status", "/auth/admin"],
+    Role.MANAGER: ["/manager"],
 }
 #Add Role Middleware
 # app.add_middleware(AuthMiddleware, config = {
@@ -60,7 +63,7 @@ app.add_middleware(
   session_cookie_secure=True,
   route_configuration=ROLE_ROUTES,
   login_redirect_path="/auth/login",
-  role_hierarchy=[Role.PUBLIC, Role.USER, Role.ADMIN],
+  role_hierarchy=[Role.PUBLIC, Role.USER, Role.MANAGER, Role.ADMIN],
 )
 
 

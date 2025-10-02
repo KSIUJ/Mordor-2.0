@@ -1,12 +1,13 @@
 from fastapi.templating import Jinja2Templates
 from typing import Any
 import logging
+from model.user import Role
 
 def is_authenticated(user: Any) -> bool:
         try:
             if not user:
                 return False
-            return getattr(user, 'role', 'PUBLIC') != 'PUBLIC'
+            return getattr(user, 'role', Role.PUBLIC) != Role.PUBLIC
         except Exception as e:
             logging.warning(f"Error checking authentication: {str(e)}")
             return False
@@ -16,7 +17,7 @@ def is_admin(user: Any) -> bool:
     try:
         if not user:
             return False
-        return getattr(user, 'role', 'PUBLIC') == 'ADMIN'
+        return getattr(user, 'role', Role.PUBLIC) == Role.ADMIN
     except Exception as e:
         logging.warning(f"Error checking authentication: {str(e)}")
         return False
@@ -26,7 +27,7 @@ def is_user(user: Any) -> bool:
     try:
         if not user:
             return False
-        return getattr(user, 'role', 'PUBLIC') == 'USER'
+        return getattr(user, 'role', Role.PUBLIC) == Role.USER
     except Exception as e:
         logging.warning(f"Error checking authentication: {str(e)}")
         return False
